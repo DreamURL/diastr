@@ -28,20 +28,20 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://yourdomain.com'), // 실제 도메인으로 변경 필요
+  metadataBase: new URL('https://beadsmapmaker.vercel.app'), // 실제 도메인으로 변경 필요
   alternates: {
     canonical: '/',
   },
   openGraph: {
     type: 'website',
     locale: 'ko_KR',
-    url: 'https://yourdomain.com', // 실제 도메인으로 변경 필요
+    url: 'https://beadsmapmaker.vercel.app', // 실제 도메인으로 변경 필요
     title: '보석십자수 도안 변환기 - 이미지를 아름다운 도안으로',
     description: '이미지를 업로드하여 아름다운 보석십자수 도안으로 변환하세요. DMC 색상 매칭, 실시간 미리보기, PDF 다운로드까지 모든 기능을 무료로 제공합니다.',
     siteName: '보석십자수 도안 변환기',
     images: [
       {
-        url: '/images/Thumbnail.png',
+        url: 'https://beadsmapmaker.vercel.app/images/Thumbnail.png',
         width: 1200,
         height: 630,
         alt: '보석십자수 도안 변환기 썸네일 이미지',
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: '보석십자수 도안 변환기 - 이미지를 아름다운 도안으로',
     description: '이미지를 업로드하여 아름다운 보석십자수 도안으로 변환하세요. DMC 색상 매칭, 실시간 미리보기, PDF 다운로드까지 모든 기능을 무료로 제공합니다.',
-    images: ['/images/Thumbnail.png'],
+    images: ['https://beadsmapmaker.vercel.app/images/Thumbnail.png'],
   },
   robots: {
     index: true,
