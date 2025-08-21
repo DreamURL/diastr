@@ -86,29 +86,19 @@ export async function renderPatternToSVG(
   // Add background
   svgContent += `<rect width="${svgWidth}" height="${svgHeight}" fill="${opts.backgroundColor}"/>`
   
-  // Add color backgrounds first (if enabled)
+  // Add color backgrounds first (if enabled) - NO GAPS, NO STROKES
   if (opts.showColors) {
     for (const pixel of pattern.constrainedPixels) {
       const x = pixel.x * opts.scale
       const y = pixel.y * opts.scale
       const color = `rgb(${pixel.selectedDMCColor.r}, ${pixel.selectedDMCColor.g}, ${pixel.selectedDMCColor.b})`
       
-      svgContent += `<rect x="${x}" y="${y}" width="${opts.scale}" height="${opts.scale}" fill="${color}"/>`
+      // 🎯 PERFECT FILL: No stroke, no gaps, seamless color blocks
+      svgContent += `<rect x="${x}" y="${y}" width="${opts.scale}" height="${opts.scale}" fill="${color}" stroke="none" shape-rendering="crispEdges"/>`
     }
   }
   
-  // Add icon backgrounds (50% transparent white circles like in PDF)
-  if (opts.showIcons) {
-    for (const pixel of pattern.constrainedPixels) {
-      const x = pixel.x * opts.scale
-      const y = pixel.y * opts.scale
-      const centerX = x + opts.scale / 2
-      const centerY = y + opts.scale / 2
-      const circleRadius = opts.scale * 0.45  // 45% of bead size (matching PDF)
-      
-      svgContent += `<circle cx="${centerX}" cy="${centerY}" r="${circleRadius}" fill="white" fill-opacity="0.1"/>`
-    }
-  }
+  // 🎯 REMOVED: Icon backgrounds completely removed to eliminate white circles
   
   // Add icons (if enabled)
   if (opts.showIcons) {
@@ -146,20 +136,7 @@ export async function renderPatternToSVG(
     }
   }
   
-  // Add grid lines (if enabled) - draw last so they're on top
-  if (opts.showGrid) {
-    // Vertical lines
-    for (let i = 0; i <= patternWidth; i++) {
-      const x = i * opts.scale
-      svgContent += `<line x1="${x}" y1="0" x2="${x}" y2="${svgHeight}" stroke="${opts.gridColor}" stroke-width="${opts.gridLineWidth}"/>`
-    }
-    
-    // Horizontal lines
-    for (let i = 0; i <= patternHeight; i++) {
-      const y = i * opts.scale
-      svgContent += `<line x1="0" y1="${y}" x2="${svgWidth}" y2="${y}" stroke="${opts.gridColor}" stroke-width="${opts.gridLineWidth}"/>`
-    }
-  }
+  // 🎯 REMOVED: All grid line rendering completely eliminated
   
   // Close SVG
   svgContent += `</svg>`

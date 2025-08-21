@@ -153,10 +153,7 @@ export async function renderPatternToCanvas(
     await Promise.all(iconDrawPromises)
   }
 
-  // Draw grid lines if enabled
-  if (opts.showGrid) {
-    drawGridLines(ctx, canvasWidth, canvasHeight, opts.scale, opts.gridLineWidth, opts.gridColor)
-  }
+  // 🎯 REMOVED: Grid lines completely eliminated for clean preview
 
   return {
     canvas,

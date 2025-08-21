@@ -1,5 +1,6 @@
 import './globals.css'
 import type { Metadata } from 'next'
+import ResponsiveNavigation from './components/ResponsiveNavigation'
 
 export const metadata: Metadata = {
   title: {
@@ -40,10 +41,10 @@ export const metadata: Metadata = {
     siteName: '보석십자수 도안 변환기',
     images: [
       {
-        url: '/images/main1.png',
+        url: '/images/Thumbnail.png',
         width: 1200,
         height: 630,
-        alt: '보석십자수 도안 변환기 메인 이미지',
+        alt: '보석십자수 도안 변환기 썸네일 이미지',
       },
     ],
   },
@@ -51,7 +52,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: '보석십자수 도안 변환기 - 이미지를 아름다운 도안으로',
     description: '이미지를 업로드하여 아름다운 보석십자수 도안으로 변환하세요. DMC 색상 매칭, 실시간 미리보기, PDF 다운로드까지 모든 기능을 무료로 제공합니다.',
-    images: ['/images/main1.png'],
+    images: ['/images/Thumbnail.png'],
   },
   robots: {
     index: true,
@@ -99,12 +100,7 @@ export default function RootLayout({
       <body>
         <header className="header" style={{ alignItems: 'center', backgroundColor: 'white', position: 'relative', zIndex: 10, borderBottom: '2px solid black' }}>
           <div className="container">
-            <nav className="nav" style={{ justifyContent: 'center' }}>
-              <a href="/">홈</a>
-              <a href="/convert">변환</a>
-              <a href="/use">사용법</a>
-              <a href="/gallery">업스케일링</a>
-            </nav>
+            <ResponsiveNavigation />
           </div>
         </header>
         <main className="main">

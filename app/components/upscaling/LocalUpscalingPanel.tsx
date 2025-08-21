@@ -103,8 +103,7 @@ export default function LocalUpscalingPanel({
         <p style={{ fontSize: '0.9rem', color: '#666', lineHeight: '1.5' }}>
           • 컴퓨터에서 직접 처리 (인터넷 불필요)<br/>
           • 무료 사용, 즉시 처리<br/>
-          • 2배 확대 지원<br/>
-          • AI 기반 고품질 업스케일링
+          • 2배 확대 지원
         </p>
       </div>
 
@@ -253,8 +252,8 @@ export default function LocalUpscalingPanel({
           }}
         >
           {isProcessing 
-            ? '브라우저 AI 업스케일링 중...'
-            : '🖥️ 브라우저에서 AI 업스케일링 시작'}
+            ? '업스케일링 중...'
+            : '🖥️ 업스케일링 시작'}
         </button>
       )}
 

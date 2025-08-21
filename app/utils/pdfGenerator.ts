@@ -317,7 +317,6 @@ async function generateRealSizePatternCanvas(
     }
   }
   
-  console.log(`🎯 Preparing ${uniqueIcons.size} unique icons for VECTOR PDF rendering...`)
   
   // Prepare all unique icons for vector rendering (INSTANT PROCESSING - NO PNG CONVERSION!)
   for (const [symbol, icon] of Array.from(uniqueIcons.entries())) {
@@ -508,8 +507,10 @@ async function addColorTablePages(pdf: any, colorTableData: ColorTableEntry[], o
   // A4 dimensions already calculated above
   
   for (let pageIndex = 0; pageIndex < totalPages; pageIndex++) {
-    // Add new page for color table (A4 portrait)
-    pdf.addPage([pageWidth, pageHeight], 'portrait')
+    // Add new page for color table (A4 portrait) - except for the first page
+    if (pageIndex > 0) {
+      pdf.addPage([pageWidth, pageHeight], 'portrait')
+    }
     
     // Add page size info to top-right corner
     setStandardFont(pdf)
@@ -574,13 +575,13 @@ async function addColorTablePages(pdf: any, colorTableData: ColorTableEntry[], o
       
       // Color swatch
       pdf.setFillColor(entry.color.r, entry.color.g, entry.color.b)
-      pdf.rect(35, yPos - 4, 15, 6, 'F')
+      pdf.rect(35, yPos - 5, 15, 5, 'F')
       pdf.setDrawColor(0, 0, 0)
-      pdf.rect(35, yPos - 4, 15, 6, 'S')
+      pdf.rect(35, yPos - 5, 15, 5, 'S')
       
       // 🌟 Icon - Use vector rendering (consistent with PDF generation!)
       const iconXPos = 55
-      const iconYPos = yPos - 4
+      const iconYPos = yPos - 5
       const vectorData = iconVectorCache.get(entry.dmcCode)
       
       if (vectorData) {
@@ -657,24 +658,30 @@ export async function generateVectorPDF(
   beadSizeMm?: number // Optional bead size parameter
 ): Promise<void> {
   try {
-    // Calculate optimal paper with margins
-    const marginMm = 10
-    const optimalPaper = calculateOptimalPaper(
-      calculatedSize.actualWidth,
-      calculatedSize.actualHeight,
-      marginMm
-    )
-    
-    // Create PDF with optimal paper size
-    const pdf = new jsPDF({
-      orientation: optimalPaper.orientation,
-      unit: 'mm',
-      format: [optimalPaper.paper.width, optimalPaper.paper.height]
-    })
+    // 🎯 NEW: 100px margin (26.46mm at 96 DPI) with center alignment
+    const marginPx = 100
+    const marginMm = (marginPx / 96) * 25.4 // Convert 100px to mm: ~26.46mm
     
     // Calculate pattern dimensions in mm
     const patternWidthMm = calculatedSize.actualWidth * 10
     const patternHeightMm = calculatedSize.actualHeight * 10
+    
+    // 🚀 CUSTOM PAGE SIZE: Always create perfect-fit page with margins
+    const pageWidthMm = patternWidthMm + (marginMm * 2)  // Pattern + 100px margins on each side
+    const pageHeightMm = patternHeightMm + (marginMm * 2) // Pattern + 100px margins on top/bottom
+    
+    console.log(`📐 Creating custom PDF page: ${pageWidthMm.toFixed(1)}mm × ${pageHeightMm.toFixed(1)}mm (Pattern: ${patternWidthMm.toFixed(1)}mm × ${patternHeightMm.toFixed(1)}mm + ${marginMm.toFixed(1)}mm margins)`)
+    
+    // Determine orientation based on aspect ratio
+    const orientation = pageWidthMm > pageHeightMm ? 'landscape' : 'portrait'
+    
+    // 🚀 Create PDF with CUSTOM page size (no standard paper limitations!)
+    const pdf = new jsPDF({
+      orientation: orientation,
+      unit: 'mm',
+      format: [pageWidthMm, pageHeightMm]  // Custom size: exact fit for pattern + margins
+    })
+    
     // Use provided bead size or fallback to defaults
     const actualBeadSizeMm = beadSizeMm || (beadType === 'circular' ? 2.8 : 2.6)
     
@@ -683,11 +690,13 @@ export async function generateVectorPDF(
     const uniqueColors = Array.from(new Set(pattern.constrainedPixels.map(p => p.selectedDMCColor.code)))
     const iconAssignments = assignIconsToColors(uniqueColors, patternGrid)
     
-    console.log(`🎯 Starting PURE VECTOR PDF generation (${pattern.constrainedPixels.length} beads, perfect squares, optimized icons)...`)
+
     
-    // Calculate starting position for pattern (no title, start from top margin)
-    const patternStartX = marginMm
-    const patternStartY = marginMm
+    // 🎯 CENTER ALIGNMENT: Calculate starting position to center pattern on page
+    const patternStartX = (pageWidthMm - patternWidthMm) / 2   // Perfect horizontal centering
+    const patternStartY = (pageHeightMm - patternHeightMm) / 2  // Perfect vertical centering
+    
+    console.log(`🎯 Pattern positioned at center: (${patternStartX.toFixed(1)}mm, ${patternStartY.toFixed(1)}mm)`)
     
     // Draw each bead as pure vector
     let beadCount = 0
@@ -746,30 +755,28 @@ export async function generateVectorPDF(
       
       beadCount++
       
-      // Progress logging every 1000 beads
-      if (beadCount % 1000 === 0) {
-        console.log(`📐 Rendered ${beadCount}/${pattern.constrainedPixels.length} beads (${Math.round(beadCount/pattern.constrainedPixels.length*100)}%)`)
-      }
     }
     
     console.log(`✅ Pattern rendering completed: ${beadCount} beads as PERFECT VECTOR SQUARES with optimized icons!`)
     
-    // Add pattern info
+    // 🎯 Add pattern info in available space (top-left corner above pattern)
     setStandardFont(pdf, 'normal')
-    pdf.setFontSize(10)
+    pdf.setFontSize(8) // Smaller font to fit in margin
     pdf.setTextColor(0, 0, 0)
     
-    const infoY = patternStartY + patternHeightMm + 10
-    pdf.text(`Size: ${calculatedSize.actualWidth} × ${calculatedSize.actualHeight} cm`, marginMm, infoY)
-    pdf.text(`Beads: ${calculatedSize.totalBeads.toLocaleString()}`, marginMm, infoY + 5)
-    pdf.text(`Bead Type: ${beadType === 'circular' ? 'Circular' : 'Square'} (${actualBeadSizeMm}mm)`, marginMm, infoY + 10)
-    pdf.text(`Created: ${new Date().toLocaleDateString('ko-KR')}`, marginMm, infoY + 15)
+    const infoX = 5 // Small margin from edge
+    const infoY = 10 // Top margin
+    pdf.text(`Size: ${calculatedSize.actualWidth} × ${calculatedSize.actualHeight} cm`, infoX, infoY)
+    pdf.text(`Beads: ${calculatedSize.totalBeads.toLocaleString()}`, infoX, infoY + 4)
+    pdf.text(`Type: ${beadType === 'circular' ? 'Circular' : 'Square'} (${actualBeadSizeMm}mm)`, infoX, infoY + 8)
     
-    // Save the PDF
-    const fileName = `${imageName}_vector_pattern.pdf`
+    // Save the PDF with detailed filename
+    const cleanImageName = imageName.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9가-힣]/g, '_')
+    const fileName = `${cleanImageName}_${calculatedSize.actualWidth}×${calculatedSize.actualHeight}cm.pdf`
     pdf.save(fileName)
     
-    console.log(`🚀 VECTOR PDF saved: ${fileName} (Infinite resolution guaranteed!)`)
+    console.log(`🚀 CENTERED VECTOR PDF saved: ${fileName}`)
+    console.log(`📄 Page size: ${pageWidthMm.toFixed(1)}mm × ${pageHeightMm.toFixed(1)}mm with perfect center alignment!`)
     
   } catch (error) {
     console.error('Vector PDF generation failed:', error)

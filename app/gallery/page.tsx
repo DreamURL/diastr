@@ -1,9 +1,12 @@
 'use client'
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import LocalUpscalingPanel from '../components/upscaling/LocalUpscalingPanel';
+import { storeDataUrlUnlimited } from '../utils/imageStorageUnlimited';
 
 export default function UpscalingPage() {
+  const router = useRouter();
   const [upscaledResults, setUpscaledResults] = useState<Array<{
     id: string;
     originalUrl: string;
@@ -11,6 +14,7 @@ export default function UpscalingPage() {
     timestamp: Date;
     settings: any;
   }>>([]);
+  const [isCreatingPattern, setIsCreatingPattern] = useState(false);
 
   const handleUpscaleComplete = (upscaledImageUrl: string, originalImageUrl?: string) => {
     const newResult = {
@@ -35,6 +39,34 @@ export default function UpscalingPage() {
 
   const clearResults = () => {
     setUpscaledResults([]);
+  };
+
+  const handleCreatePattern = async (upscaledUrl: string, resultId: string) => {
+    try {
+      setIsCreatingPattern(true);
+      
+      // Generate filename for upscaled image
+      const fileName = `upscaled_${resultId}.png`;
+      
+      // Store upscaled image using the same system as home page
+      const result = await storeDataUrlUnlimited(upscaledUrl, fileName, 'uploadedImage');
+      
+      if (result.success) {
+        console.log(`✅ Upscaled image stored successfully using ${result.storageMethod}`);
+        console.log(`📊 Storage size: ${(result.storageSize / 1024 / 1024).toFixed(2)} MB`);
+        
+        // Navigate to convert page using Next.js router
+        router.push('/convert');
+      } else {
+        throw new Error('이미지 저장에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('Failed to create pattern from upscaled image:', error);
+      const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.';
+      alert(`도안 만들기 실패: ${errorMessage}\n\n다시 시도해주세요.`);
+    } finally {
+      setIsCreatingPattern(false);
+    }
   };
 
   return (
@@ -152,22 +184,21 @@ export default function UpscalingPage() {
                     </button>
                     
                     <button
-                      onClick={() => {
-                        // 보석십자수 변환 페이지로 이동하면서 이미지 전달
-                        localStorage.setItem('uploadedImage', result.upscaledUrl);
-                        window.location.href = '/convert';
-                      }}
+                      onClick={() => handleCreatePattern(result.upscaledUrl, result.id)}
+                      disabled={isCreatingPattern}
                       style={{
                         flex: 1,
                         padding: '10px',
                         fontSize: '0.9rem',
-                        backgroundColor: 'transparent',
-                        color: 'black',
+                        backgroundColor: isCreatingPattern ? '#f0f0f0' : 'transparent',
+                        color: isCreatingPattern ? '#999' : 'black',
                         border: '2px solid black',
-                        cursor: 'pointer'
+                        cursor: isCreatingPattern ? 'not-allowed' : 'pointer',
+                        opacity: isCreatingPattern ? 0.7 : 1,
+                        transition: 'all 0.2s ease'
                       }}
                     >
-                      도안 만들기
+                      {isCreatingPattern ? '처리중...' : '도안 만들기'}
                     </button>
                   </div>
                 </div>
@@ -211,11 +242,76 @@ export default function UpscalingPage() {
           <ul style={{ lineHeight: '1.6', paddingLeft: '1rem' }}>
             <li>보석십자수 도안 제작 전 이미지를 업스케일링하면 더 선명한 결과를 얻을 수 있습니다</li>
             <li>작은 이미지 (300x300 이하)는 특히 업스케일링 효과가 큽니다</li>
-            <li>업스케일링 후 "도안 만들기" 버튼으로 바로 변환할 수 있습니다</li>
-            <li>브라우저 로컬 처리가 안 되면 클라우드 모드를 시도해보세요</li>
+            <li><strong>업스케일링 후 "도안 만들기" 버튼으로 바로 변환 페이지로 이동합니다</strong></li>
+            <li>업스케일링된 이미지는 자동으로 저장되어 변환 페이지에서 바로 사용됩니다</li>
           </ul>
         </div>
       </div>
+
+      {/* Processing Overlay */}
+      {isCreatingPattern && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            padding: '3rem 2rem',
+            borderRadius: '12px',
+            textAlign: 'center',
+            maxWidth: '400px',
+            width: '90%',
+            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)'
+          }}>
+            <div style={{
+              width: '50px',
+              height: '50px',
+              border: '4px solid #f3f3f3',
+              borderTop: '4px solid #000',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite',
+              margin: '0 auto 1.5rem'
+            }} />
+            <h3 style={{ 
+              marginBottom: '1rem', 
+              fontSize: '1.3rem',
+              fontWeight: 'bold'
+            }}>
+              도안 만들기 준비 중...
+            </h3>
+            <p style={{ 
+              color: '#666', 
+              fontSize: '1rem',
+              lineHeight: '1.5' 
+            }}>
+              업스케일링된 이미지를 저장하고<br/>
+              변환 페이지로 이동합니다.
+            </p>
+            <div style={{
+              marginTop: '1.5rem',
+              fontSize: '0.9rem',
+              color: '#999'
+            }}>
+              잠시만 기다려주세요...
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style jsx>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 }

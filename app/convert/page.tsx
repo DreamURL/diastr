@@ -331,35 +331,36 @@ export default function ConvertPage() {
       <div style={{ height: '100px' }}></div>
       
       <div>
-        <h1 style={{ fontSize: '2rem', marginBottom: '2rem', textAlign: 'center' }}>
+        <h1 className="convert-page-title" style={{ fontSize: '2rem', marginBottom: '2rem', textAlign: 'center' }}>
           이미지 변환
         </h1>
       
       {/* 상단 섹션: 이미지와 설정 */}
       <div style={{ marginBottom: '3rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', alignItems: 'start' }}>
+        <div className="convert-main-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', alignItems: 'start' }}>
           {/* 왼쪽: 업로드된 이미지 */}
-          <div>
+          <div className="convert-image-section">
             <h2 style={{ fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '1rem' }}>
               업로드된 이미지
             </h2>
             <img 
               src={imageData} 
               alt={imageName}
+              className="convert-uploaded-image"
               style={{ 
                 maxWidth: '100%', 
                 maxHeight: '300px',
                 border: '2px solid black'
               }}
             />
-            <p className="mt-4">
+            <p className="mt-4 convert-image-info">
               파일명: {imageName}<br/>
               원본 크기: {imageWidth} × {imageHeight}px
             </p>
           </div>
 
           {/* 오른쪽: 설정 옵션들 */}
-          <div>
+          <div className="convert-settings-section">
             <h2 style={{ fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '1rem' }}>
               도안 설정
             </h2>
@@ -404,10 +405,11 @@ export default function ConvertPage() {
         </div>
 
         {/* 도안 만들기 버튼 */}
-        <div className="text-center mt-6">
+        <div className="text-center mt-6 convert-generate-section">
           <button 
             onClick={handleGeneratePreview}
             disabled={isGenerating}
+            className="convert-generate-btn"
             style={{ 
               fontSize: '1.1rem', 
               padding: '15px 30px',
@@ -508,7 +510,7 @@ export default function ConvertPage() {
 
           <div style={{ height: '30px' }}></div>
           {/* 도안 다운로드 버튼들 */}
-          <div style={{ 
+          <div className="convert-download-section" style={{ 
             display: 'flex', 
             justifyContent: 'center', 
             alignItems: 'center',
@@ -520,6 +522,7 @@ export default function ConvertPage() {
             <button 
               onClick={handleDownloadIntegrated}
               disabled={!pattern || isGenerating || isGeneratingPDF}
+              className="convert-download-btn convert-dmc-btn"
               style={{ 
                 fontSize: '1rem', 
                 padding: '12px 24px',
@@ -538,6 +541,7 @@ export default function ConvertPage() {
             <button 
               onClick={handleDownloadVectorPDF}
               disabled={!pattern || isGenerating || isGeneratingPDF}
+              className="convert-download-btn convert-pattern-btn"
               style={{ 
                 fontSize: '1rem', 
                 padding: '12px 24px',

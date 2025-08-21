@@ -381,8 +381,33 @@ export async function getStoredImageUnlimited(
       return {
         dataUrl: legacyData,
         fileName: legacyName,
-        metadata: { storageMethod: 'legacy' }
+        metadata: { storageMethod: 'legacy-session' }
       }
+    }
+    
+    // Fallback: try legacy localStorage (for old gallery implementation)
+    try {
+      const legacyLocalData = localStorage.getItem(storageKey)
+      if (legacyLocalData) {
+        // Try to get filename from sessionStorage or use default
+        const legacyLocalName = sessionStorage.getItem(`${storageKey}Name`) || 
+                                localStorage.getItem(`${storageKey}Name`) || 
+                                'upscaled_image.png'
+        
+        console.log('🔄 Found legacy localStorage image, migrating to new system...')
+        
+        // Clean up legacy data
+        localStorage.removeItem(storageKey)
+        localStorage.removeItem(`${storageKey}Name`)
+        
+        return {
+          dataUrl: legacyLocalData,
+          fileName: legacyLocalName,
+          metadata: { storageMethod: 'legacy-local', migrated: true }
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to check legacy localStorage:', error)
     }
     
     return null
@@ -506,6 +531,207 @@ function formatFileSize(bytes: number): string {
   const sizes = ['Bytes', 'KB', 'MB', 'GB']
   const i = Math.floor(Math.log(bytes) / Math.log(k))
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+}
+
+/**
+ * Store dataUrl directly (for upscaled images)
+ * Compatible with storeImageUnlimited system
+ */
+export async function storeDataUrlUnlimited(
+  dataUrl: string,
+  fileName: string,
+  storageKey: string = 'uploadedImage'
+): Promise<ImageStorageResult> {
+  try {
+    // Convert dataUrl to estimated size
+    const estimatedSize = dataUrl.length * 0.75 // Base64 is ~33% larger than binary
+
+    // Method 1: Try in-memory storage first
+    try {
+      memoryStorage.set(storageKey, {
+        file: null as any, // No original file for upscaled images
+        dataUrl,
+        timestamp: Date.now()
+      })
+
+      // Store metadata in sessionStorage
+      try {
+        sessionStorage.setItem(`${storageKey}Method`, 'memory')
+        sessionStorage.setItem(`${storageKey}Name`, fileName)
+        sessionStorage.setItem(`${storageKey}Size`, estimatedSize.toString())
+        sessionStorage.setItem(`${storageKey}IsDataUrl`, 'true')
+      } catch {
+        // Ignore sessionStorage errors
+      }
+
+      return {
+        success: true,
+        imageData: dataUrl,
+        fileName: fileName,
+        storageMethod: 'memory',
+        originalSize: estimatedSize,
+        storageSize: dataUrl.length,
+        metadata: { isDataUrl: true }
+      }
+    } catch (error) {
+      console.warn('Memory storage failed for dataUrl, trying IndexedDB...')
+    }
+
+    // Method 2: Try IndexedDB
+    try {
+      const idbResult = await storeDataUrlInIndexedDB(dataUrl, fileName, storageKey)
+      if (idbResult.success) {
+        return idbResult
+      }
+    } catch (error) {
+      console.warn('IndexedDB storage failed for dataUrl, trying chunked storage...')
+    }
+
+    // Method 3: Chunked storage
+    try {
+      const chunkSize = 1024 * 1024 * 2 // 2MB chunks
+      const chunks = []
+      
+      for (let i = 0; i < dataUrl.length; i += chunkSize) {
+        chunks.push(dataUrl.slice(i, i + chunkSize))
+      }
+      
+      // Store chunks in sessionStorage
+      sessionStorage.setItem(`${storageKey}Method`, 'chunked')
+      sessionStorage.setItem(`${storageKey}Name`, fileName)
+      sessionStorage.setItem(`${storageKey}Size`, estimatedSize.toString())
+      sessionStorage.setItem(`${storageKey}ChunkCount`, chunks.length.toString())
+      sessionStorage.setItem(`${storageKey}IsDataUrl`, 'true')
+      
+      for (let i = 0; i < chunks.length; i++) {
+        sessionStorage.setItem(`${storageKey}Chunk${i}`, chunks[i])
+      }
+      
+      return {
+        success: true,
+        imageData: dataUrl,
+        fileName: fileName,
+        storageMethod: 'chunked',
+        originalSize: estimatedSize,
+        storageSize: dataUrl.length,
+        metadata: { chunkCount: chunks.length, isDataUrl: true }
+      }
+    } catch (error) {
+      console.error('All storage methods failed for dataUrl:', error)
+      return {
+        success: false,
+        imageData: '',
+        fileName: fileName,
+        storageMethod: 'memory',
+        originalSize: estimatedSize,
+        storageSize: 0
+      }
+    }
+
+  } catch (error) {
+    return {
+      success: false,
+      imageData: '',
+      fileName: fileName,
+      storageMethod: 'memory',
+      originalSize: 0,
+      storageSize: 0
+    }
+  }
+}
+
+/**
+ * Store dataUrl in IndexedDB
+ */
+async function storeDataUrlInIndexedDB(
+  dataUrl: string,
+  fileName: string,
+  storageKey: string
+): Promise<ImageStorageResult> {
+  return new Promise((resolve) => {
+    const request = indexedDB.open('ImageStorage', 1)
+    
+    request.onerror = () => {
+      resolve({
+        success: false,
+        imageData: '',
+        fileName: fileName,
+        storageMethod: 'indexeddb',
+        originalSize: dataUrl.length * 0.75,
+        storageSize: 0
+      })
+    }
+
+    request.onupgradeneeded = (event) => {
+      const db = (event.target as IDBOpenDBRequest).result
+      if (!db.objectStoreNames.contains('images')) {
+        db.createObjectStore('images', { keyPath: 'id' })
+      }
+    }
+
+    request.onsuccess = async (event) => {
+      const db = (event.target as IDBOpenDBRequest).result
+      
+      try {
+        const transaction = db.transaction(['images'], 'readwrite')
+        const store = transaction.objectStore('images')
+        
+        const imageData = {
+          id: storageKey,
+          file: null, // No original file for upscaled images
+          dataUrl: dataUrl,
+          fileName: fileName,
+          size: dataUrl.length * 0.75,
+          timestamp: Date.now(),
+          isDataUrl: true
+        }
+        
+        const storeRequest = store.put(imageData)
+        
+        storeRequest.onsuccess = () => {
+          // Store metadata in sessionStorage
+          try {
+            sessionStorage.setItem(`${storageKey}Method`, 'indexeddb')
+            sessionStorage.setItem(`${storageKey}Name`, fileName)
+            sessionStorage.setItem(`${storageKey}Size`, (dataUrl.length * 0.75).toString())
+            sessionStorage.setItem(`${storageKey}IsDataUrl`, 'true')
+          } catch {
+            // Ignore sessionStorage errors
+          }
+
+          resolve({
+            success: true,
+            imageData: dataUrl,
+            fileName: fileName,
+            storageMethod: 'indexeddb',
+            originalSize: dataUrl.length * 0.75,
+            storageSize: dataUrl.length,
+            metadata: { isDataUrl: true }
+          })
+        }
+        
+        storeRequest.onerror = () => {
+          resolve({
+            success: false,
+            imageData: '',
+            fileName: fileName,
+            storageMethod: 'indexeddb',
+            originalSize: dataUrl.length * 0.75,
+            storageSize: 0
+          })
+        }
+      } catch (error) {
+        resolve({
+          success: false,
+          imageData: '',
+          fileName: fileName,
+          storageMethod: 'indexeddb',
+          originalSize: dataUrl.length * 0.75,
+          storageSize: 0
+        })
+      }
+    }
+  })
 }
 
 /**

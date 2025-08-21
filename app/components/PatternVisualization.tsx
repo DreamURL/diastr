@@ -188,7 +188,13 @@ export default function PatternVisualization({
                 style={{ 
                   maxWidth: '100%',
                   height: 'auto',
-                  display: 'block'
+                  display: 'block',
+                  // 🎯 FORCE CLEAN RENDERING: Remove any potential grid artifacts
+                  imageRendering: 'pixelated',
+                  filter: 'none',
+                  border: 'none',
+                  outline: 'none',
+                  boxShadow: 'none'
                 }}
               />
             </div>
