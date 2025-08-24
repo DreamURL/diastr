@@ -55,6 +55,9 @@ export interface DMCFirstPatternOptions {
   imageHeight: number
   beadSize?: number
   analysisQuality?: 'fast' | 'standard' | 'high'
+  // 🎯 NEW: 사용자 지정 색상 지원
+  useCustomColors?: boolean
+  customColorCodes?: string[]
 }
 
 export function useDMCFirstPatternGeneration() {
@@ -97,17 +100,24 @@ export function useDMCFirstPatternGeneration() {
       )
       console.log(`📐 Pattern grid: ${config.beadGridWidth}x${config.beadGridHeight}`)
 
-      // NEW ALGORITHM: Full DMC Matching → Color Reduction
+      // 🎯 NEW ALGORITHM: Full DMC Matching → Color Reduction with Custom Colors Support
       setState(prev => ({ ...prev, isAnalyzingColors: true }))
       
       const fullPattern = await generateFullDMCPattern(
         imageData,
         config,
-        options.colorCount
+        options.colorCount,
+        options.analysisQuality || 'standard',
+        // 🎯 NEW: 사용자 지정 색상 지원
+        options.useCustomColors ? options.customColorCodes : undefined
       )
       
       setState(prev => ({ ...prev, isAnalyzingColors: false }))
-      console.log(`🎨 NEW: Used ${fullPattern.statistics.originalColorCount} colors, reduced to ${fullPattern.statistics.reducedColorCount}`)
+      
+      const colorModeLog = options.useCustomColors 
+        ? `🎨 CUSTOM COLORS: Used ${options.customColorCodes?.length} user-specified colors`
+        : `🎨 ALL COLORS: Used ${fullPattern.statistics.originalColorCount} colors, reduced to ${fullPattern.statistics.reducedColorCount}`
+      console.log(colorModeLog)
 
       // Convert to legacy format for UI compatibility
       const pattern: DMCFirstPattern = convertFullPatternToLegacy(fullPattern)

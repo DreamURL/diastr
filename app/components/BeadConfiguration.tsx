@@ -26,14 +26,25 @@ export default function BeadConfiguration({
   isBeadConfirmed = false
 }: BeadConfigurationProps) {
   return (
-    <div className="mb-8">
-      <h3 style={{ fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-        비즈 종류
+    <div className="mb-8" style={{ fontFamily: 'Baskervville, serif', fontWeight: '500' }}>
+      <h3 style={{ 
+        fontSize: '1.2rem', 
+        fontWeight: '500', 
+        marginBottom: '1rem',
+        fontFamily: 'Baskervville, serif'
+      }}>
+        Bead Type
       </h3>
       
-      {/* 비즈 종류 선택 */}
+      {/* Bead Type Selection */}
       <div style={{ display: 'flex', gap: '2rem', marginBottom: '1.5rem' }}>
-        <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+        <label style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          cursor: 'pointer',
+          fontFamily: 'Baskervville, serif',
+          fontWeight: '500'
+        }}>
           <input
             type="radio"
             name="beadType"
@@ -43,12 +54,20 @@ export default function BeadConfiguration({
             style={{ marginRight: '0.5rem' }}
           />
           <div>
-            <div style={{ fontWeight: 'bold' }}>원형 비즈</div>
-            <div style={{ fontSize: '0.9rem', color: '#666' }}>지름 설정 가능</div>
+            <div style={{ 
+              fontWeight: '500',
+              fontFamily: 'Baskervville, serif'
+            }}>Circular Beads</div>
           </div>
         </label>
         
-        <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+        <label style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          cursor: 'pointer',
+          fontFamily: 'Baskervville, serif',
+          fontWeight: '500'
+        }}>
           <input
             type="radio"
             name="beadType"
@@ -58,21 +77,33 @@ export default function BeadConfiguration({
             style={{ marginRight: '0.5rem' }}
           />
           <div>
-            <div style={{ fontWeight: 'bold' }}>사각형 비즈</div>
-            <div style={{ fontSize: '0.9rem', color: '#666' }}>한 변 길이 설정 가능</div>
+            <div style={{ 
+              fontWeight: '500',
+              fontFamily: 'Baskervville, serif'
+            }}>Square Beads</div>
           </div>
         </label>
       </div>
       
-      {/* 비즈 사이즈 설정 */}
+      {/* Bead Size Configuration */}
       <div style={{ marginBottom: '1rem' }}>
-        <h4 style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '0.8rem' }}>비즈 사이즈 설정</h4>
+        <h4 style={{ 
+          fontSize: '1.1rem', 
+          fontWeight: '500', 
+          marginBottom: '0.8rem',
+          fontFamily: 'Baskervville, serif'
+        }}>Bead Size Configuration</h4>
         
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-          {/* 원형 비즈 사이즈 */}
+          {/* Circular Bead Size */}
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
-              원형 비즈 지름 (mm)
+            <label style={{ 
+              display: 'block', 
+              marginBottom: '0.5rem', 
+              fontWeight: '500',
+              fontFamily: 'Baskervville, serif'
+            }}>
+              Circular Bead Diameter (mm)
             </label>
             <input
               type="number"
@@ -85,16 +116,23 @@ export default function BeadConfiguration({
                 width: '100%',
                 padding: '8px',
                 border: '2px solid black',
-                borderRadius: '4px'
+                borderRadius: '4px',
+                fontFamily: 'Baskervville, serif',
+                fontWeight: '500'
               }}
-              placeholder="예: 2.8"
+              placeholder="e.g., 2.8"
             />
           </div>
           
-          {/* 사각형 비즈 사이즈 */}
+          {/* Square Bead Size */}
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
-              사각형 비즈 한 변 (mm)
+            <label style={{ 
+              display: 'block', 
+              marginBottom: '0.5rem', 
+              fontWeight: '500',
+              fontFamily: 'Baskervville, serif'
+            }}>
+              Square Bead Side Length (mm)
             </label>
             <input
               type="number"
@@ -107,14 +145,16 @@ export default function BeadConfiguration({
                 width: '100%',
                 padding: '8px',
                 border: '2px solid black',
-                borderRadius: '4px'
+                borderRadius: '4px',
+                fontFamily: 'Baskervville, serif',
+                fontWeight: '500'
               }}
-              placeholder="예: 2.6"
+              placeholder="e.g., 2.6"
             />
           </div>
         </div>
         
-        {/* 확인 버튼 */}
+        {/* Confirm Button */}
         <div style={{ textAlign: 'center' }}>
           <button
             onClick={onConfirmBeadSettings}
@@ -126,14 +166,15 @@ export default function BeadConfiguration({
               border: 'none',
               borderRadius: '4px',
               cursor: 'pointer',
-              fontWeight: 'bold'
+              fontWeight: '500',
+              fontFamily: 'Baskervville, serif'
             }}
           >
-            비즈 설정 확인
+            Confirm Bead Settings
           </button>
         </div>
         
-        {/* 확인 상태 표시 */}
+        {/* Confirmation Status Display */}
         {isBeadConfirmed && (
           <div style={{
             marginTop: '1rem',
@@ -142,59 +183,17 @@ export default function BeadConfiguration({
             border: '1px solid #28a745',
             borderRadius: '4px',
             fontSize: '0.9rem',
-            color: '#28a745'
+            color: '#28a745',
+            fontFamily: 'Baskervville, serif',
+            fontWeight: '500'
           }}>
-            ✅ <strong>비즈 설정이 확인되었습니다</strong><br/>
-            • 원형 비즈: 지름 {confirmedCircularSize}mm<br/>
-            • 사각형 비즈: 한 변 {confirmedSquareSize}mm<br/>
-            • 현재 선택: {beadType === 'circular' ? '원형' : '사각형'} 비즈
+            ✅ <strong>Bead settings confirmed</strong><br/>
+            • Circular beads: diameter {confirmedCircularSize}mm<br/>
+            • Square beads: side length {confirmedSquareSize}mm<br/>
+            • Current selection: {beadType === 'circular' ? 'Circular' : 'Square'} beads
           </div>
         )}
-      </div>
-      
-      {/* 비즈 정보 요약 */}
-      <div style={{ 
-        padding: '1rem', 
-        border: '1px solid black', 
-        backgroundColor: 'rgba(0,0,0,0.05)',
-        fontSize: '0.9rem'
-      }}>
-        <h4 style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>📏 비즈 정보 요약</h4>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-          <div>
-            <p><strong>선택된 종류:</strong> {beadType === 'circular' ? '원형 비즈' : '사각형 비즈'}</p>
-            <p><strong>적용된 크기:</strong> 
-              {beadType === 'circular' 
-                ? `지름 ${isBeadConfirmed ? confirmedCircularSize : '미확인'}mm` 
-                : `한 변 ${isBeadConfirmed ? confirmedSquareSize : '미확인'}mm`
-              }
-            </p>
-          </div>
-          <div>
-            <p><strong>센티미터당 개수:</strong> 
-              {isBeadConfirmed 
-                ? beadType === 'circular' 
-                  ? `약 ${(10 / confirmedCircularSize).toFixed(1)}개`
-                  : `약 ${(10 / confirmedSquareSize).toFixed(1)}개`
-                : '설정 확인 필요'
-              }
-            </p>
-            <p><strong>상태:</strong> 
-              <span style={{ 
-                color: isBeadConfirmed ? '#28a745' : '#ff6b35',
-                fontWeight: 'bold'
-              }}>
-                {isBeadConfirmed ? '확인됨' : '미확인'}
-              </span>
-            </p>
-          </div>
-        </div>
-        {!isBeadConfirmed && (
-          <p style={{ color: '#ff6b35', fontWeight: 'bold', marginTop: '0.5rem' }}>
-            ⚠️ 비즈 설정을 확인해주세요
-          </p>
-        )}
-      </div>
+      </div> 
     </div>
   )
 }

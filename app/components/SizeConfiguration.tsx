@@ -26,7 +26,7 @@ export default function SizeConfiguration({
   beadSize,
   onCalculatedSizeChange
 }: SizeConfigurationProps) {
-  // 비즈 타입에 따른 크기 계산
+  // Calculate bead size based on type
   const beadSizeMm = beadSize
   const beadsPerCm = 10 / beadSizeMm
   
@@ -66,17 +66,26 @@ export default function SizeConfiguration({
   const maxTotalBeads = maxBeadsForWidth * maxBeadsForHeight
   
   return (
-    <div className="mb-8">
-      <h3 style={{ fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-        크기 설정
+    <div className="mb-8" style={{ fontFamily: 'Baskervville, serif', fontWeight: '500' }}>
+      <h3 style={{ 
+        fontSize: '1.2rem', 
+        fontWeight: '500', 
+        marginBottom: '1rem',
+        fontFamily: 'Baskervville, serif'
+      }}>
+        Size Configuration
       </h3>
       
       <div className="form-group">
-        <label>가로 길이 (cm)</label>
+        <label style={{ fontFamily: 'Baskervville, serif', fontWeight: '500' }}>Width (cm)</label>
         <select 
           value={targetWidth} 
           onChange={(e) => onTargetWidthChange(Number(e.target.value))}
-          style={{ width: '100%' }}
+          style={{ 
+            width: '100%',
+            fontFamily: 'Baskervville, serif',
+            fontWeight: '500'
+          }}
         >
           {sizeOptions.map(size => (
             <option key={size} value={size}>
@@ -86,44 +95,44 @@ export default function SizeConfiguration({
         </select>
       </div>
       
-      <div style={{ 
+      {/* <div style={{ 
         padding: '1rem', 
         border: '1px solid black', 
         backgroundColor: 'rgba(0,0,0,0.05)',
         fontSize: '0.9rem'
       }}>
-        <h4 style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>계산된 크기</h4>
+        <h4 style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>Calculated Size</h4>
         
         <div style={{ marginBottom: '1rem' }}>
-          <h5 style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#333' }}>목표 크기</h5>
-          <p>가로: {targetWidth}cm</p>
-          <p>세로: {targetHeight.toFixed(1)}cm</p>
+          <h5 style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#333' }}>Target Size</h5>
+          <p>Width: {targetWidth}cm</p>
+          <p>Height: {targetHeight.toFixed(1)}cm</p>
         </div>
         
         <div style={{ marginBottom: '1rem' }}>
-          <h5 style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#666' }}>비즈 격자에 맞춘 실제 크기</h5>
-          <p>가로: {actualWidth.toFixed(2)}cm</p>
-          <p>세로: {actualHeight.toFixed(2)}cm</p>
+          <h5 style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#666' }}>Actual Size Aligned with Bead Grid</h5>
+          <p>Width: {actualWidth.toFixed(2)}cm</p>
+          <p>Height: {actualHeight.toFixed(2)}cm</p>
           <p style={{ fontSize: '0.8rem', color: '#888', fontStyle: 'italic' }}>
-            (비즈 {beadType === 'circular' ? '원형' : '사각형'} {beadSizeMm.toFixed(1)}mm 기준)
+            (Based on {beadType === 'circular' ? 'circular' : 'square'} beads {beadSizeMm.toFixed(1)}mm)
           </p>
         </div>
         
         <div style={{ marginBottom: '1rem' }}>
-          <h5 style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#0066cc' }}>비즈 격자 정보</h5>
-          <p>가로 격자: {beadGridWidth}개</p>
-          <p>세로 격자: {beadGridHeight}개</p>
-          <p>1cm당 비즈: {beadsPerCm.toFixed(2)}개</p>
+          <h5 style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#0066cc' }}>Bead Grid Information</h5>
+          <p>Width Grid: {beadGridWidth} beads</p>
+          <p>Height Grid: {beadGridHeight} beads</p>
+          <p>Beads per cm: {beadsPerCm.toFixed(2)}</p>
         </div>
         
         <div>
-          <h5 style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#cc6600' }}>비즈 개수</h5>
-          <p>총 비즈 개수: {totalBeads.toLocaleString()}개</p>
+          <h5 style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#cc6600' }}>Bead Count</h5>
+          <p>Total Beads: {totalBeads.toLocaleString()}</p>
           <p style={{ fontSize: '0.8rem', color: '#888' }}>
-            최대 가능: {maxTotalBeads.toLocaleString()}개
+            Maximum Possible: {maxTotalBeads.toLocaleString()}
           </p>
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }

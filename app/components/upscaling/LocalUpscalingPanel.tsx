@@ -19,7 +19,7 @@ export default function LocalUpscalingPanel({
   const [progress, setProgress] = useState({ percentage: 0, message: '' });
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // 브라우저 업스케일러 초기화
+  // Initialize browser upscaler
   useEffect(() => {
     async function initBrowserUpscaler() {
       try {
@@ -52,10 +52,10 @@ export default function LocalUpscalingPanel({
     if (!selectedFile || !browserUpscaler) return;
     
     setIsProcessing(true);
-    setProgress({ percentage: 0, message: '이미지 로딩 중...' });
+    setProgress({ percentage: 0, message: 'Loading image...' });
 
     try {
-      // 이미지 엘리먼트 생성
+      // Create image element
       const img = document.createElement('img');
       img.crossOrigin = 'anonymous';
       
@@ -65,18 +65,18 @@ export default function LocalUpscalingPanel({
         img.src = previewUrl;
       });
 
-      setProgress({ percentage: 25, message: 'AI 모델 준비 중...' });
+      setProgress({ percentage: 25, message: 'Preparing...' });
       
       const upscaledDataUrl = await browserUpscaler.upscaleImage(img, {
         scale: 2,
         model: 'standard'
       });
 
-      setProgress({ percentage: 100, message: '완료!' });
+      setProgress({ percentage: 100, message: 'Complete!' });
       onUpscaleComplete?.(upscaledDataUrl, previewUrl);
       
     } catch (error) {
-      setProgress({ percentage: 0, message: `오류: ${error}` });
+      setProgress({ percentage: 0, message: `Error: ${error}` });
     } finally {
       setIsProcessing(false);
     }
@@ -92,18 +92,38 @@ export default function LocalUpscalingPanel({
   };
 
   return (
-    <div className={`upscaling-panel ${className}`}>
-      <h3 style={{ fontWeight: 'bold', marginBottom: '1rem' }}>
-        AI 이미지 업스케일링 (브라우저 로컬)
+    <div className={`upscaling-panel ${className}`} style={{ fontFamily: 'Baskervville, serif', fontWeight: '500' }}>
+      <h3 style={{ 
+        fontWeight: '500', 
+        marginBottom: '1rem',
+        fontFamily: 'Baskervville, serif'
+      }}>
+        Image Upscaling
       </h3>
 
-      {/* 브라우저 로컬 처리 설명 */}
-      <div style={{ marginBottom: '1.5rem', border: '2px solid black', padding: '1rem' }}>
-        <h4 style={{ fontWeight: 'bold', marginBottom: '1rem' }}>🖥️ 브라우저 로컬 처리</h4>
-        <p style={{ fontSize: '0.9rem', color: '#666', lineHeight: '1.5' }}>
-          • 컴퓨터에서 직접 처리 (인터넷 불필요)<br/>
-          • 무료 사용, 즉시 처리<br/>
-          • 2배 확대 지원
+      {/* Browser Local Processing Description */}
+      <div style={{ 
+        marginBottom: '1.5rem', 
+        border: '2px solid black', 
+        padding: '1rem',
+        fontFamily: 'Baskervville, serif',
+        fontWeight: '500'
+      }}>
+        <h4 style={{ 
+          fontWeight: '500', 
+          marginBottom: '1rem',
+          fontFamily: 'Baskervville, serif'
+        }}>🖥️ Browser Local Processing</h4>
+        <p style={{ 
+          fontSize: '0.9rem', 
+          color: '#666', 
+          lineHeight: '1.5',
+          fontFamily: 'Baskervville, serif',
+          fontWeight: '500'
+        }}>
+          • Process directly on your computer (no internet required)<br/>
+          • Free to use, instant processing<br/>
+          • Supports 2x enlargement
         </p>
       </div>
 
@@ -126,11 +146,13 @@ export default function LocalUpscalingPanel({
             color: 'white',
             border: 'none',
             borderRadius: '4px',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            fontFamily: 'Baskervville, serif',
+            fontWeight: '500'
           }}
           disabled={isProcessing}
         >
-          이미지 선택
+          Select Image
         </button>
         
         {selectedFile && (
@@ -143,11 +165,13 @@ export default function LocalUpscalingPanel({
               color: 'black',
               border: '2px solid black',
               borderRadius: '4px',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              fontFamily: 'Baskervville, serif',
+              fontWeight: '500'
             }}
             disabled={isProcessing}
           >
-            초기화
+            Reset
           </button>
         )}
       </div>
@@ -155,8 +179,12 @@ export default function LocalUpscalingPanel({
       {/* Image Preview */}
       {previewUrl && (
         <div style={{ marginBottom: '1.5rem' }}>
-          <h4 style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>
-            원본 이미지
+          <h4 style={{ 
+            fontWeight: '500', 
+            marginBottom: '0.5rem',
+            fontFamily: 'Baskervville, serif'
+          }}>
+            Original Image
           </h4>
           <div style={{
             border: '2px solid black',
@@ -177,17 +205,26 @@ export default function LocalUpscalingPanel({
         </div>
       )}
 
-      {/* 브라우저 로컬 설정 */}
+      {/* Browser Local Settings */}
       {selectedFile && (
         <div style={{ marginBottom: '1.5rem' }}>
-          <h4 style={{ fontWeight: 'bold', marginBottom: '1rem' }}>
-            업스케일링 설정
+          <h4 style={{ 
+            fontWeight: '500', 
+            marginBottom: '1rem',
+            fontFamily: 'Baskervville, serif'
+          }}>
+            Upscaling Settings
           </h4>
           
-          {/* Scale Selection - 고정 2x */}
+          {/* Scale Selection - Fixed 2x */}
           <div style={{ marginBottom: '1rem' }}>
-            <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem' }}>
-              확대 배율
+            <label style={{ 
+              display: 'block', 
+              fontWeight: '500', 
+              marginBottom: '0.5rem',
+              fontFamily: 'Baskervville, serif'
+            }}>
+              Enlargement Ratio
             </label>
             <div style={{
               width: '100%',
@@ -195,12 +232,20 @@ export default function LocalUpscalingPanel({
               border: '2px solid black',
               fontSize: '1rem',
               backgroundColor: '#f0f0f0',
-              borderRadius: '4px'
+              borderRadius: '4px',
+              fontFamily: 'Baskervville, serif',
+              fontWeight: '500'
             }}>
-              2x (고정 - 브라우저 최적화)
+              2x (Fixed - Browser Optimized)
             </div>
-            <p style={{ fontSize: '0.8rem', color: '#666', marginTop: '0.5rem' }}>
-              브라우저 로컬 처리는 2배 확대로 고정되어 있습니다.
+            <p style={{ 
+              fontSize: '0.8rem', 
+              color: '#666', 
+              marginTop: '0.5rem',
+              fontFamily: 'Baskervville, serif',
+              fontWeight: '500'
+            }}>
+              Browser local processing is fixed at 2x enlargement.
             </p>
           </div>
         </div>
@@ -209,8 +254,12 @@ export default function LocalUpscalingPanel({
       {/* Progress */}
       {isProcessing && (
         <div style={{ marginBottom: '1.5rem' }}>
-          <h4 style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>
-            브라우저에서 AI 업스케일링 중...
+          <h4 style={{ 
+            fontWeight: '500', 
+            marginBottom: '0.5rem',
+            fontFamily: 'Baskervville, serif'
+          }}>
+            Upscaling in Browser...
           </h4>
           <div style={{
             width: '100%',
@@ -227,7 +276,12 @@ export default function LocalUpscalingPanel({
               borderRadius: '2px'
             }} />
           </div>
-          <p style={{ marginTop: '0.5rem', fontSize: '0.9rem' }}>
+          <p style={{ 
+            marginTop: '0.5rem', 
+            fontSize: '0.9rem',
+            fontFamily: 'Baskervville, serif',
+            fontWeight: '500'
+          }}>
             {progress.message} ({progress.percentage}%)
           </p>
         </div>
@@ -248,12 +302,13 @@ export default function LocalUpscalingPanel({
             opacity: isProcessing || !browserUpscaler ? 0.6 : 1,
             cursor: isProcessing || !browserUpscaler ? 'not-allowed' : 'pointer',
             width: '100%',
-            fontWeight: 'bold'
+            fontWeight: '500',
+            fontFamily: 'Baskervville, serif'
           }}
         >
           {isProcessing 
-            ? '업스케일링 중...'
-            : '🖥️ 업스케일링 시작'}
+            ? 'Upscaling...'
+            : '🖥️ Start Upscaling'}
         </button>
       )}
 
@@ -264,9 +319,11 @@ export default function LocalUpscalingPanel({
           padding: '1rem',
           border: '2px solid orange',
           backgroundColor: 'rgba(255, 165, 0, 0.1)',
-          borderRadius: '4px'
+          borderRadius: '4px',
+          fontFamily: 'Baskervville, serif',
+          fontWeight: '500'
         }}>
-          ⚠️ 브라우저 AI 모델 로딩 중... 잠시만 기다려주세요.
+          ⚠️ Loading... Please wait a moment.
         </div>
       )}
     </div>

@@ -1,98 +1,205 @@
+import Image from 'next/image'
+
 export default function UsePage() {
   return (
-    <div>
-      <div style={{ height: '100px' }}></div>
-      <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '2rem', textAlign: 'center' }}>
-        사용법 안내
-      </h1>
-      
-      <div style={{ maxWidth: '800px', margin: '0 auto', lineHeight: '1.8' }}>
-        <section className="mb-8">
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-            1. 이미지 업로드
-          </h2>
-          <ul style={{ marginLeft: '2rem', marginBottom: '1rem' }}>
-            <li>홈페이지에서 변환하고 싶은 이미지를 업로드하세요</li>
-            <li>지원 형식: JPG, PNG, GIF, WebP</li>
-            <li>최대 파일 크기: 50MB</li>
-            <li>이미지 크기 제한 없음</li>
-          </ul>
-        </section>
-
-        <section className="mb-8">
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-            2. 크기 설정
-          </h2>
-          <ul style={{ marginLeft: '2rem', marginBottom: '1rem' }}>
-            <li>완성품의 가로 길이를 5cm~200cm 범위에서 선택하세요</li>
-            <li>세로 길이는 원본 이미지 비율에 맞춰 자동 계산됩니다</li>
-            <li>선택한 크기에 따라 필요한 비즈 개수가 계산됩니다</li>
-          </ul>
-        </section>
-
-        <section className="mb-8">
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-            3. 비즈 종류 선택
-          </h2>
-          <ul style={{ marginLeft: '2rem', marginBottom: '1rem' }}>
-            <li><strong>원형 비즈</strong>: 지름 2.8mm, 부드러운 느낌</li>
-            <li><strong>사각형 비즈</strong>: 한 변 2.6mm, 선명한 느낌</li>
-            <li>비즈 종류에 따라 센티미터당 개수가 달라집니다</li>
-          </ul>
-        </section>
-
-        <section className="mb-8">
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-            4. 색상 개수 설정
-          </h2>
-          <ul style={{ marginLeft: '2rem', marginBottom: '1rem' }}>
-            <li>사용할 색상 개수를 직접 입력하거나 추천 값을 선택하세요</li>
-            <li><strong>최소</strong>: 형태를 알아볼 수 있는 최소한의 색상</li>
-            <li><strong>최적</strong>: 이미지 특성을 잘 표현하는 효율적인 색상 수</li>
-            <li><strong>최대</strong>: 가장 세밀한 표현이 가능한 색상 수</li>
-          </ul>
-        </section>
-
-        <section className="mb-8">
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-            5. 미리보기 및 다운로드
-          </h2>
-          <ul style={{ marginLeft: '2rem', marginBottom: '1rem' }}>
-            <li>"미리보기 생성" 버튼을 클릭하여 도안을 확인하세요</li>
-            <li>실시간으로 설정을 변경하여 다양한 결과를 비교할 수 있습니다</li>
-            <li>만족스러운 결과가 나오면 "도안 다운로드" 버튼을 클릭하세요</li>
-          </ul>
-        </section>
-
-        <section className="mb-8">
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-            주요 특징
-          </h2>
-          <div style={{ 
-            border: '2px solid black', 
-            padding: '1.5rem',
-            backgroundColor: 'rgba(0,0,0,0.05)'
+    <div className="home-layout">
+      {/* Instructions Section */}
+      <div className="home-section use-instructions-section">
+        <div style={{ marginBottom: '2rem' }}>
+          <h1 style={{ 
+            fontSize: 'clamp(1.8rem, 5vw, 2.5rem)', 
+            fontWeight: '700', 
+            fontFamily: 'Baskervville, serif',
+            color: 'black', 
+            marginBottom: '1rem',
+            textAlign: 'center'
           }}>
-            <ul style={{ marginLeft: '1rem' }}>
-              <li><strong>정확한 색상 매칭</strong>: DMC 색상과 Delta E 2000 알고리즘을 사용하여 가장 유사한 색상을 찾습니다</li>
-              <li><strong>아이콘 최적화</strong>: 유사한 아이콘이 인접하지 않도록 배치하여 혼동을 방지합니다</li>
-              <li><strong>실시간 미리보기</strong>: 설정 변경 시 즉시 결과를 확인할 수 있습니다</li>
-              <li><strong>AI 업스케일링</strong>: 저해상도 이미지의 품질을 향상시킵니다</li>
+            How to Use
+          </h1>
+          <p style={{ 
+            fontSize: 'clamp(1rem, 2.5vw, 1.125rem)', 
+            fontFamily: 'Baskervville, serif',
+            fontWeight: '500',
+            color: 'black', 
+            lineHeight: '1.6', 
+            opacity: '0.8',
+            textAlign: 'center'
+          }}>
+            Complete guide to create beautiful Diamond painting patterns
+          </p>
+        </div>
+        
+        <div style={{ 
+          maxWidth: '100%', 
+          lineHeight: '1.6',
+          fontSize: 'clamp(0.9rem, 2vw, 1rem)',
+          overflow: 'auto',
+          height: 'calc(100% - 8rem)'
+        }}>
+          <section style={{ marginBottom: '1.5rem' }}>
+            <h2 style={{ 
+              fontSize: 'clamp(1.2rem, 3vw, 1.4rem)', 
+              fontWeight: '600', 
+              marginBottom: '0.8rem',
+              fontFamily: 'Baskervville, serif',
+              color: 'black'
+            }}>
+              1. Image Upload
+            </h2>
+            <ul style={{ marginLeft: '1.5rem', marginBottom: '0.8rem' }}>
+              <li>Upload the image you want to convert on the homepage</li>
+              <li>Supported formats: JPG, PNG, GIF, WebP</li>
+              <li>Maximum file size: 50MB</li>
+              <li>No image size restrictions</li>
             </ul>
-          </div>
-        </section>
+          </section>
 
-        <section className="mb-8">
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-            팁과 주의사항
-          </h2>
-          <ul style={{ marginLeft: '2rem' }}>
-            <li>선명하고 대비가 뚜렷한 이미지일수록 좋은 결과를 얻을 수 있습니다</li>
-            <li>너무 복잡한 이미지는 단순화해서 사용하는 것이 좋습니다</li>
-            <li>큰 사이즈로 작업할 경우 비즈 개수가 매우 많아질 수 있으니 참고하세요</li>
-            <li>색상 수가 많을수록 세밀하지만 작업 난이도가 높아집니다</li>
-          </ul>
-        </section>
+          <section style={{ marginBottom: '1.5rem' }}>
+            <h2 style={{ 
+              fontSize: 'clamp(1.2rem, 3vw, 1.4rem)', 
+              fontWeight: '600', 
+              marginBottom: '0.8rem',
+              fontFamily: 'Baskervville, serif',
+              color: 'black'
+            }}>
+              2. Size Configuration
+            </h2>
+            <ul style={{ marginLeft: '1.5rem', marginBottom: '0.8rem' }}>
+              <li>Select the width of the finished product from 5cm to 200cm range</li>
+              <li>The height is automatically calculated according to the original image ratio</li>
+              <li>The number of beads needed is calculated based on the selected size</li>
+            </ul>
+          </section>
+
+          <section style={{ marginBottom: '1.5rem' }}>
+            <h2 style={{ 
+              fontSize: 'clamp(1.2rem, 3vw, 1.4rem)', 
+              fontWeight: '600', 
+              marginBottom: '0.8rem',
+              fontFamily: 'Baskervville, serif',
+              color: 'black'
+            }}>
+              3. Bead Type Selection
+            </h2>
+            <ul style={{ marginLeft: '1.5rem', marginBottom: '0.8rem' }}>
+              <li><strong>Circular Beads</strong>: 2.8mm diameter, smooth feel</li>
+              <li><strong>Square Beads</strong>: 2.6mm per side, sharp feel</li>
+              <li>The number of beads per centimeter varies depending on the bead type</li>
+            </ul>
+          </section>
+
+          <section style={{ marginBottom: '1.5rem' }}>
+            <h2 style={{ 
+              fontSize: 'clamp(1.2rem, 3vw, 1.4rem)', 
+              fontWeight: '600', 
+              marginBottom: '0.8rem',
+              fontFamily: 'Baskervville, serif',
+              color: 'black'
+            }}>
+              4. Color Count Configuration
+            </h2>
+            <ul style={{ marginLeft: '1.5rem', marginBottom: '0.8rem' }}>
+              <li>Enter the number of colors to use directly or select recommended values</li>
+              <li><strong>Minimum</strong>: Minimum colors needed to recognize the shape</li>
+              <li><strong>Optimal</strong>: Efficient number of colors that express image characteristics well</li>
+              <li><strong>Maximum</strong>: Maximum number of colors for the most detailed expression</li>
+            </ul>
+          </section>
+
+          <section style={{ marginBottom: '1.5rem' }}>
+            <h2 style={{ 
+              fontSize: 'clamp(1.2rem, 3vw, 1.4rem)', 
+              fontWeight: '600', 
+              marginBottom: '0.8rem',
+              fontFamily: 'Baskervville, serif',
+              color: 'black'
+            }}>
+              5. Preview and Download
+            </h2>
+            <ul style={{ marginLeft: '1.5rem', marginBottom: '0.8rem' }}>
+              <li>Click the "Generate Preview" button to check the pattern</li>
+              <li>You can compare various results by changing settings</li>
+              <li>When you're satisfied with the result, click the "Download Pattern" button</li>
+            </ul>
+          </section>
+
+          <section style={{ marginBottom: '1.5rem' }}>
+            <h2 style={{ 
+              fontSize: 'clamp(1.2rem, 3vw, 1.4rem)', 
+              fontWeight: '600', 
+              marginBottom: '0.8rem',
+              fontFamily: 'Baskervville, serif',
+              color: 'black'
+            }}>
+              Key Features
+            </h2>
+            <div style={{ 
+              border: '2px solid black', 
+              padding: '1rem',
+              backgroundColor: 'rgba(0,0,0,0.05)',
+              fontSize: 'clamp(0.85rem, 1.8vw, 0.95rem)'
+            }}>
+              <ul style={{ marginLeft: '1rem' }}>
+                <li><strong>Accurate Color Matching</strong>: Uses DMC colors and Delta E 2000 algorithm</li>
+                <li><strong>Icon Optimization</strong>: Prevents confusion by arranging similar icons separately</li>
+                <li><strong>Real-time Preview</strong>: Check results immediately when changing settings</li>
+                <li><strong>Upscaling</strong>: Improves the quality of low-resolution images</li>
+              </ul>
+            </div>
+          </section>
+
+          <section style={{ marginBottom: '1.5rem' }}>
+            <h2 style={{ 
+              fontSize: 'clamp(1.2rem, 3vw, 1.4rem)', 
+              fontWeight: '600', 
+              marginBottom: '0.8rem',
+              fontFamily: 'Baskervville, serif',
+              color: 'black'
+            }}>
+              Tips and Precautions
+            </h2>
+            <ul style={{ marginLeft: '1.5rem' }}>
+              <li>Images with clear contrast and sharpness produce better results</li>
+              <li>It's better to simplify overly complex images before using them</li>
+              <li>Note that when working with large sizes, the number of beads can become very large</li>
+              <li>More colors mean more detail but higher difficulty in work</li>
+            </ul>
+          </section>
+        </div>
+      </div>
+
+      {/* Gallery Section */}
+      <div 
+        className="home-section use-gallery-section" 
+        role="img"
+        aria-label="Diamond painting pattern usage guide visual examples"
+      >
+        <div className="gallery-images-container">
+          <div className="image-with-label">
+            <div className="image-label" style={{ fontFamily: 'Baskervville, serif', fontWeight: '700', color: 'white' }}>Before</div>
+            <Image
+              src="/images/use_left.jpg"
+              alt="Diamond painting pattern creation process example"
+              width={600}
+              height={600}
+              className="home-gallery-image"
+              priority
+              sizes="(max-width: 480px) 200px, (max-width: 768px) 250px, 320px"
+            />
+          </div>
+          <div className="image-with-label">
+            <div className="image-label" style={{ fontFamily: 'Baskervville, serif', fontWeight: '700', color: 'white' }}>After</div>
+            <Image
+              src="/images/use_right.jpeg"
+              alt="Finished Diamond painting pattern result example"
+              width={600}
+              height={600}
+              className="home-gallery-image"
+              loading="lazy"
+              sizes="(max-width: 480px) 200px, (max-width: 768px) 250px, 320px"
+            />
+          </div>
+        </div>
       </div>
     </div>
   )

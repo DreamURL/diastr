@@ -9,6 +9,7 @@ import PreviewPanel from '../components/PreviewPanel'
 import DMCColorTable from '../components/DMCColorTable'
 import { useDMCFirstPatternGeneration } from '../hooks/useDMCFirstPatternGeneration'
 import { generateRealSizePDF, generateVectorPDF } from '../utils/pdfGenerator'
+import { generatePureSVGPattern, downloadSVGFile } from '../utils/svgGenerator'
 
 
 export default function ConvertPage() {
@@ -59,8 +60,15 @@ export default function ConvertPage() {
   const [pendingColorCount, setPendingColorCount] = useState<number>(200) // 확인 전 임시 색상 개수
   const [colorConfirmed, setColorConfirmed] = useState(false) // 색상 설정 확인 여부
   
+  // 🎯 NEW: 사용자 지정 색상 관련 state
+  const [useCustomColors, setUseCustomColors] = useState<boolean>(false)
+  const [customColorCodes, setCustomColorCodes] = useState<string[]>([]) // 사용자가 입력한 DMC 코드들
+  
   // PDF generation state
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false)
+  
+  // SVG generation state
+  const [isGeneratingSVG, setIsGeneratingSVG] = useState(false)
 
   
   useEffect(() => {
@@ -102,43 +110,61 @@ export default function ConvertPage() {
     loadStoredImage()
   }, [])
 
-  // 색상 설정 확인 처리 함수 (현재 입력값을 파라미터로 받음)
-  const handleConfirmColorSettings = async (currentColorCount: number) => {
+  // 🎯 NEW: 색상 설정 확인 처리 함수 (사용자 지정 색상 지원)
+  const handleConfirmColorSettings = async (currentColorCount: number, customColors?: string[]) => {
     if (!imageData || !imageWidth || !imageHeight || !targetWidth || !beadType) {
-      alert('이미지 또는 도안 설정이 완료되지 않았습니다.')
+      alert('Image or pattern settings are not completed.')
       return
     }
     
     setIsCalculatingColors(true)
     
     try {
-      // 현재 입력된 색상 개수를 pending과 confirmed 모두에 적용
-      setPendingColorCount(currentColorCount)
-      setColorCount(currentColorCount)
-      
-      // 색상 제안 계산 실행 (실제로는 표시 안 함)
-      const currentBeadSize = beadType === 'circular' 
-        ? (beadSettingsConfirmed ? confirmedCircularSize : circularSize)
-        : (beadSettingsConfirmed ? confirmedSquareSize : squareSize)
-      
-      const suggestions = await calculateColorSuggestions(
-        imageData,
-        imageWidth,
-        imageHeight,
-        targetWidth,
-        beadType,
-        currentBeadSize
-      )
-      
-      setOptimalColors(suggestions.optimal)
-      setMaxColors(suggestions.maximum)
-      setColorConfirmed(true)
-      
-      alert(`색상 설정이 확인되었습니다.\n선택된 색상: ${currentColorCount}개`)
+      // 🎯 사용자 지정 색상 모드 처리
+      if (customColors && customColors.length > 0) {
+        setUseCustomColors(true)
+        setCustomColorCodes(customColors)
+        setPendingColorCount(customColors.length)
+        setColorCount(customColors.length)
+        
+        // 사용자 색상 모드에서는 color suggestions 계산 불필요
+        setOptimalColors(customColors.length)
+        setMaxColors(customColors.length)
+        setColorConfirmed(true)
+        
+        alert(`Custom color settings confirmed.\nColors to use: ${customColors.length} (${customColors.slice(0, 5).join(', ')}${customColors.length > 5 ? ' and ' + (customColors.length - 5) + ' more' : ''})`)
+        
+      } else {
+        // 전체 색상 모드 처리 (기존 로직)
+        setUseCustomColors(false)
+        setCustomColorCodes([])
+        setPendingColorCount(currentColorCount)
+        setColorCount(currentColorCount)
+        
+        // 색상 제안 계산 실행 (실제로는 표시 안 함)
+        const currentBeadSize = beadType === 'circular' 
+          ? (beadSettingsConfirmed ? confirmedCircularSize : circularSize)
+          : (beadSettingsConfirmed ? confirmedSquareSize : squareSize)
+        
+        const suggestions = await calculateColorSuggestions(
+          imageData,
+          imageWidth,
+          imageHeight,
+          targetWidth,
+          beadType,
+          currentBeadSize
+        )
+        
+        setOptimalColors(suggestions.optimal)
+        setMaxColors(suggestions.maximum)
+        setColorConfirmed(true)
+        
+        alert(`Color settings confirmed.\nSelected colors: ${currentColorCount}`)
+      }
       
     } catch (error) {
       console.error('Color suggestion calculation failed:', error)
-      alert('색상 분석에 실패했습니다. 다시 시도해주세요.')
+      alert('Color analysis failed. Please try again.')
       setOptimalColors(30)
       setMaxColors(60)
     } finally {
@@ -150,12 +176,12 @@ export default function ConvertPage() {
   const handleConfirmBeadSettings = () => {
     // 입력 값 유효성 검사
     if (circularSize < 1.0 || circularSize > 10.0) {
-      alert('원형 비즈 지름은 1.0mm에서 10.0mm 사이여야 합니다.')
+      alert('Circular bead diameter must be between 1.0mm and 10.0mm.')
       return
     }
     
     if (squareSize < 1.0 || squareSize > 10.0) {
-      alert('사각형 비즈 한 변은 1.0mm에서 10.0mm 사이여야 합니다.')
+      alert('Square bead side must be between 1.0mm and 10.0mm.')
       return
     }
     
@@ -164,7 +190,7 @@ export default function ConvertPage() {
     setConfirmedSquareSize(squareSize)
     setBeadSettingsConfirmed(true)
     
-    alert(`비즈 설정이 확인되었습니다.\n원형 비즈: 지름 ${circularSize}mm\n사각형 비즈: 한 변 ${squareSize}mm\n현재 선택: ${beadType === 'circular' ? '원형' : '사각형'} 비즈`)
+    alert(`Bead settings confirmed.\nCircular bead: diameter ${circularSize}mm\nSquare bead: side ${squareSize}mm\nCurrent selection: ${beadType === 'circular' ? 'Circular' : 'Square'} bead`)
   }
 
   // Handle pattern generation with confirmation
@@ -176,12 +202,16 @@ export default function ConvertPage() {
       ? (beadSettingsConfirmed ? confirmedCircularSize : circularSize)
       : (beadSettingsConfirmed ? confirmedSquareSize : squareSize)
     
-    // 확인 다이얼로그 표시
-    const confirmMessage = `다음 설정으로 도안을 생성하시겠습니까?\n\n` +
-      `📐 도안 크기: ${targetWidth}cm (가로 기준)\n` +
-      `🔵 비즈 종류: ${beadType === 'circular' ? '원형' : '사각형'} (${currentBeadSize}mm)\n` +
-      `🎨 색상 개수: ${colorCount}개\n\n` +
-      `※ 설정을 변경하신 경우 먼저 각각의 '확인' 버튼을 눌러주세요.`
+    // 🎯 확인 다이얼로그 표시 (사용자 색상 모드 정보 포함)
+    const colorModeText = useCustomColors 
+      ? `🎨 Custom colors: ${colorCount} (${customColorCodes.slice(0, 3).join(', ')}${customColorCodes.length > 3 ? ' etc...' : ''})`
+      : `🎨 Selected from all colors: ${colorCount}`
+    
+    const confirmMessage = `Do you want to generate a pattern with the following settings?\n\n` +
+      `📐 Pattern size: ${targetWidth}cm (width)\n` +
+      `🔵 Bead type: ${beadType === 'circular' ? 'Circular' : 'Square'} (${currentBeadSize}mm)\n` +
+      `${colorModeText}\n\n` +
+      `※ If you changed settings, please click the 'Confirm' button for each setting first.`
     
     const confirmed = confirm(confirmMessage)
     if (!confirmed) {
@@ -191,28 +221,31 @@ export default function ConvertPage() {
     // 설정 확인 상태 체크
     const warnings = []
     if (!colorConfirmed) {
-      warnings.push('색상 설정이 확인되지 않았습니다')
+      warnings.push('Color settings are not confirmed')
     }
     if (!beadSettingsConfirmed) {
-      warnings.push('비즈 설정이 확인되지 않았습니다')
+      warnings.push('Bead settings are not confirmed')
     }
     
     if (warnings.length > 0) {
-      const proceedAnyway = confirm(`${warnings.join(', ')}.\n그대로 진행하시겠습니까?`)
+      const proceedAnyway = confirm(`${warnings.join(', ')}.\nDo you want to proceed anyway?`)
       if (!proceedAnyway) {
         return
       }
     }
     
     try {
+      // 🎯 사용자 지정 색상 정보 포함하여 패턴 생성
       await generatePattern(imageData, {
         targetWidth,
         beadType,
         colorCount,
         imageWidth,
         imageHeight,
-        // 비즈 사이즈 정보 추가
-        beadSize: currentBeadSize
+        beadSize: currentBeadSize,
+        // NEW: 사용자 지정 색상 지원
+        useCustomColors,
+        customColorCodes: useCustomColors ? customColorCodes : undefined
       })
     } catch (error) {
       console.error('Pattern generation failed:', error)
@@ -221,7 +254,7 @@ export default function ConvertPage() {
 
   const handleDownloadIntegrated = async () => {
     if (!pattern || !calculatedSize) {
-      alert('도안이 아직 생성되지 않았습니다.')
+      alert('Pattern has not been generated yet.')
       return
     }
   
@@ -237,8 +270,8 @@ export default function ConvertPage() {
         imageName
       )
       
-      // 성공 메시지
-      const message = `✅ DMC TABLE PDF 생성 완료!\n\n`
+      // Success message
+      const message = `✅ DMC TABLE PDF generation completed!\n\n`
       
       alert(message)
       
@@ -246,9 +279,9 @@ export default function ConvertPage() {
       console.error('DMC TABLE PDF 생성 실패:', error)
       
       if (error instanceof Error) {
-        alert(`DMC TABLE 생성 실패: ${error.message}`)
+        alert(`DMC TABLE generation failed: ${error.message}`)
       } else {
-        alert('DMC TABLE 생성에 실패했습니다. 다시 시도해주세요.')
+        alert('DMC TABLE generation failed. Please try again.')
       }
     } finally {
       setIsGeneratingPDF(false)
@@ -259,7 +292,7 @@ export default function ConvertPage() {
   // 🚀 NEW: Vector PDF download handler (INFINITE RESOLUTION!)
   const handleDownloadVectorPDF = async () => {
     if (!pattern || !calculatedSize) {
-      alert('도안이 아직 생성되지 않았습니다.')
+      alert('Pattern has not been generated yet.')
       return
     }
     
@@ -281,17 +314,63 @@ export default function ConvertPage() {
         currentBeadSize // 실제 비즈 크기 전달
       )
       
-      const message = `✅ 도안 출력 완료!\n\n` + 
-      '다운 받은 pdf 는 크롬에서 열어주세요.\n\n' + 
-      'Adobe Acrobat Reader로 열면 렉걸려요.'
+      const message = `✅ Pattern print completed!\n\n` + 
+      'Please open the downloaded PDF in Chrome.\n\n' + 
+      'Adobe Acrobat Reader may be slow.'
       
       alert(message)
       
     } catch (error) {
       console.error('Vector PDF generation failed:', error)
-      alert('도안 출력에 실패했습니다. 다시 시도해주세요.')
+      alert('Pattern print failed. Please try again.')
     } finally {
       setIsGeneratingPDF(false)
+    }
+  }
+
+  // 🆕 NEW: Pure SVG export handler (no margins, no info)
+  const handleDownloadPureSVG = async () => {
+    if (!pattern || !calculatedSize) {
+      alert('Pattern has not been generated yet.')
+      return
+    }
+    
+    try {
+      setIsGeneratingSVG(true)
+      
+      console.log('🎨 Starting PURE SVG generation (lightweight, no margins)...')
+      
+      // 현재 설정된 비즈 사이즈 가져오기
+      const currentBeadSize = beadType === 'circular' 
+        ? (beadSettingsConfirmed ? confirmedCircularSize : circularSize)
+        : (beadSettingsConfirmed ? confirmedSquareSize : squareSize)
+      
+      // Generate pure SVG content
+      const svgContent = generatePureSVGPattern(
+        pattern,
+        beadType,
+        calculatedSize,
+        currentBeadSize
+      )
+      
+      // Generate filename
+      const cleanImageName = imageName.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9가-힣]/g, '_')
+      const fileName = `${cleanImageName}_${calculatedSize.actualWidth}×${calculatedSize.actualHeight}cm.svg`
+      
+      // Download SVG file
+      downloadSVGFile(svgContent, fileName)
+      
+      const message = `✅ SVG export completed!\n\n` + 
+      'Downloaded as lightweight SVG file.\n' + 
+      'Can be opened in web browsers or vector editing programs.'
+      
+      alert(message)
+      
+    } catch (error) {
+      console.error('Pure SVG generation failed:', error)
+      alert('SVG export failed. Please try again.')
+    } finally {
+      setIsGeneratingSVG(false)
     }
   }
 
@@ -308,12 +387,12 @@ export default function ConvertPage() {
   if (!imageData) {
     return (
       <div className="text-center">
-        <h1 style={{ fontSize: '2rem', marginBottom: '2rem' }}>이미지 변환</h1>
-        <p style={{ fontSize: '1.1rem', marginBottom: '2rem' }}>
-          업로드된 이미지가 없습니다.
+        <h1 style={{ marginTop: '5rem', fontSize: '2rem', marginBottom: '2rem', fontFamily: 'Baskervville, serif', fontWeight: 700 }}>Image Conversion</h1>
+        <p style={{ fontFamily: 'Baskervville, serif', fontWeight: 500, fontSize: '1.1rem', marginBottom: '2rem' }}>
+          No uploaded image found.
         </p>
-        <a href="/" style={{ color: 'black', textDecoration: 'underline' }}>
-          홈페이지로 돌아가서 이미지를 업로드하세요
+        <a href="/" style={{ fontFamily: 'Baskervville, serif', fontWeight: 500, color: 'black', textDecoration: 'underline' }}>
+          Please return to homepage and upload an image
         </a>
       </div>
     )
@@ -328,55 +407,49 @@ export default function ConvertPage() {
         }
       `}</style>
       
-      <div style={{ height: '100px' }}></div>
-      
-      <div>
-        <h1 className="convert-page-title" style={{ fontSize: '2rem', marginBottom: '2rem', textAlign: 'center' }}>
-          이미지 변환
-        </h1>
-      
-      {/* 상단 섹션: 이미지와 설정 */}
-      <div style={{ marginBottom: '3rem' }}>
-        <div className="convert-main-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', alignItems: 'start' }}>
-          {/* 왼쪽: 업로드된 이미지 */}
-          <div className="convert-image-section">
-            <h2 style={{ fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-              업로드된 이미지
+      {/* Main Convert Container - Full Screen Layout */}
+      <div className="convert-main-container w-screen h-screen">
+        <div className="parent convert-grid-layout">
+          
+          {/* Div1: Original Image Display */}
+          <div className="div1 convert-image-display">
+            <h2 style={{ fontSize: '1.1rem', fontFamily: 'Baskervville, serif', fontWeight: 700, marginBottom: '0.8rem' }}>
+              Uploaded Image
             </h2>
             <img 
               src={imageData} 
               alt={imageName}
               className="convert-uploaded-image"
               style={{ 
-                maxWidth: '100%', 
-                maxHeight: '300px',
-                border: '2px solid black'
+                width: '100%',
+                height: 'auto',
+                maxHeight: '80%',
+                objectFit: 'contain'
               }}
             />
-            <p className="mt-4 convert-image-info">
-              파일명: {imageName}<br/>
-              원본 크기: {imageWidth} × {imageHeight}px
+            <p style={{ fontFamily: 'Baskervville, serif', fontWeight: 500, fontSize: '0.85rem', marginTop: '0.5rem' }}>
+              {imageWidth} × {imageHeight}px
             </p>
           </div>
 
-          {/* 오른쪽: 설정 옵션들 */}
-          <div className="convert-settings-section">
-            <h2 style={{ fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-              도안 설정
+          {/* Div2: Size & Bead Configuration */}
+          <div className="div2 convert-configuration-panel">
+            <h2 style={{ fontSize: '1.1rem', fontFamily: 'Baskervville, serif', fontWeight: 700, marginBottom: '1rem', marginTop: '2rem' }}>
+              Size & Bead Settings
             </h2>
             
-          <SizeConfiguration
-            targetWidth={targetWidth}
-            onTargetWidthChange={setTargetWidth}
-            imageWidth={imageWidth}
-            imageHeight={imageHeight}
-            beadType={beadType}
-            beadSize={beadType === 'circular' 
-              ? (beadSettingsConfirmed ? confirmedCircularSize : circularSize)
-              : (beadSettingsConfirmed ? confirmedSquareSize : squareSize)
-            }
-            onCalculatedSizeChange={setCalculatedSize}
-          />
+            <SizeConfiguration
+              targetWidth={targetWidth}
+              onTargetWidthChange={setTargetWidth}
+              imageWidth={imageWidth}
+              imageHeight={imageHeight}
+              beadType={beadType}
+              beadSize={beadType === 'circular' 
+                ? (beadSettingsConfirmed ? confirmedCircularSize : circularSize)
+                : (beadSettingsConfirmed ? confirmedSquareSize : squareSize)
+              }
+              onCalculatedSizeChange={setCalculatedSize}
+            />
 
             <BeadConfiguration
               beadType={beadType}
@@ -390,7 +463,14 @@ export default function ConvertPage() {
               onConfirmBeadSettings={handleConfirmBeadSettings}
               isBeadConfirmed={beadSettingsConfirmed}
             />
+          </div>
 
+          {/* Div3: Color Configuration */}
+          <div className="div3 convert-color-panel">
+            <h2 style={{ fontSize: '1.1rem', fontFamily: 'Baskervville, serif', fontWeight: 700, marginBottom: '0.8rem' }}>
+              Color Settings
+            </h2>
+            
             <ColorConfiguration
               colorCount={pendingColorCount}
               onColorCountChange={setPendingColorCount}
@@ -402,195 +482,233 @@ export default function ConvertPage() {
               isConfirmed={colorConfirmed}
             />
           </div>
-        </div>
 
-        {/* 도안 만들기 버튼 */}
-        <div className="text-center mt-6 convert-generate-section">
-          <button 
-            onClick={handleGeneratePreview}
-            disabled={isGenerating}
-            className="convert-generate-btn"
-            style={{ 
-              fontSize: '1.1rem', 
-              padding: '15px 30px',
-              marginRight: '1rem',
-              opacity: isGenerating ? 0.6 : 1,
-              cursor: isGenerating ? 'not-allowed' : 'pointer'
-            }}
-          >
-            {isAnalyzingColors ? 'DMC 색상 분석 중...' : isGenerating ? '도안 생성 중...' : '도안 만들기'}
-          </button>
-          
-          {/* 진행 상태 안내 메시지 */}
-          {(isAnalyzingColors || isGenerating) && (
-            <div style={{
-              marginTop: '1rem',
+          {/* Div4: Pattern Generation Button */}
+          <div className="div4 convert-generate-panel" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <button 
+              onClick={handleGeneratePreview}
+              disabled={isGenerating}
+              className="convert-generate-btn"
+              style={{ 
+                fontFamily: 'Baskervville, serif',
+                fontWeight: 500,
+                fontSize: '3rem', 
+                padding: '12px 20px',
+                width: '100%',
+                opacity: isGenerating ? 0.6 : 1,
+                cursor: isGenerating ? 'not-allowed' : 'pointer'
+              }}
+            >
+              {isAnalyzingColors ? 'Analyzing DMC Colors...' : isGenerating ? 'Generating Pattern...' : 'Create Pattern'}
+            </button>
+            
+            {/* Error Display */}
+            {patternError && (
+              <div style={{ 
+                marginTop: '0.5rem',
+                padding: '0.5rem',
+                border: '2px solid red',
+                backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                color: 'red',
+                fontFamily: 'Baskervville, serif',
+                fontWeight: 700,
+                fontSize: '0.8rem'
+              }}>
+                {patternError}
+              </div>
+            )}
+
+            {/* Progress Message */}
+            {(isAnalyzingColors || isGenerating) && (
+              <div style={{
+                marginTop: '0.5rem',
+                color: 'black',
+                fontSize: '0.75rem',
+                textAlign: 'center',
+                fontFamily: 'Baskervville, serif',
+                fontWeight: 500
+              }}>
+                Up to 5 minutes required
+              </div>
+            )}
+          </div>
+
+          {/* Div5: Preview Panel with Statistics */}
+          <div className="div5 convert-preview-panel">
+            <h2 style={{ color: 'black', fontSize: '1.1rem', fontFamily: 'Baskervville, serif', fontWeight: 700, marginBottom: '0.8rem' }}>
+              <br/>
+              <br/>
+            </h2>
+            
+            {pattern ? (
+              <div style={{ height: 'calc(100% - 3.5rem)' }}>
+                <PreviewPanel
+                  imageData={imageData}
+                  targetWidth={targetWidth}
+                  beadType={beadType}
+                  colorCount={colorCount}
+                  imageWidth={imageWidth}
+                  imageHeight={imageHeight}
+                  dmcPattern={pattern}
+                  dmcPreviewUrl={previewImageUrl}
+                  isGeneratingPattern={isGenerating}
+                  calculatedSize={calculatedSize}
+                  colorStatistics={colorStatistics}
+                />
+              </div>
+            ) : (
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                height: 'calc(100% - 3.5rem)',
+                color: '#666',
+                fontFamily: 'Baskervville, serif',
+                fontWeight: 500,
+                fontSize: '0.9rem'
+              }}>
+                Preview will be displayed when pattern is generated
+              </div>
+            )}
+          </div>
+
+          {/* Div6: DMC Color Table */}
+          <div className="div6 convert-dmc-table-panel">
+            <h2 style={{ fontSize: '1.1rem', fontFamily: 'Baskervville, serif', fontWeight: 700, marginBottom: '0.8rem' }}>
+              DMC Color Table
+            </h2>
+            
+            {pattern ? (
+              <div style={{ height: 'calc(100% - 2rem)', overflow: 'auto' }}>
+                <DMCColorTable pattern={pattern} />
+              </div>
+            ) : (
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                height: '100%',
+                color: '#666',
+                fontFamily: 'Baskervville, serif',
+                fontWeight: 500,
+                fontSize: '0.9rem'
+              }}>
+                Color table will be displayed after pattern generation
+              </div>
+            )}
+          </div>
+
+          {/* Div7: Download Buttons */}
+          <div className="div7 convert-download-panel">
+            {pattern ? (
+              <div style={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: '0.5rem', 
+                width: '100%',
+                justifyContent: 'center', // Center align buttons vertically
+                alignItems: 'stretch' // Stretch buttons to full width
+              }}>
+                <button 
+                  onClick={handleDownloadIntegrated}
+                  disabled={!pattern || isGenerating || isGeneratingPDF || isGeneratingSVG}
+                  className="convert-download-btn convert-dmc-btn"
+                  style={{ 
+                    fontFamily: 'Baskervville, serif',
+                    fontWeight: 700,
+                    fontSize: '0.85rem', 
+                    padding: '8px 12px',
+                    width: '100%', // Full width
+                    backgroundColor: (!pattern || isGenerating || isGeneratingPDF || isGeneratingSVG) ? '#EEDF7A' : '#EEDF7A',
+                    color: '#343131',
+                    border: 'none',
+                    borderRadius: '4px',
+                    opacity: (!pattern || isGenerating || isGeneratingPDF || isGeneratingSVG) ? 0.6 : 1,
+                    cursor: (!pattern || isGenerating || isGeneratingPDF || isGeneratingSVG) ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  {isGeneratingPDF ? 'Generating...' : '📊 DMC TABLE'}
+                </button>
+
+                <button 
+                  onClick={handleDownloadVectorPDF}
+                  disabled={!pattern || isGenerating || isGeneratingPDF || isGeneratingSVG}
+                  className="convert-download-btn convert-pattern-btn"
+                  style={{ 
+                    fontFamily: 'Baskervville, serif',
+                    fontWeight: 700,
+                    fontSize: '0.85rem', 
+                    padding: '8px 12px',
+                    width: '100%', // Full width
+                    backgroundColor: (!pattern || isGenerating || isGeneratingPDF || isGeneratingSVG) ? '#D8A25E' : '#D8A25E',
+                    color: '#343131',
+                    border: 'none',
+                    borderRadius: '4px',
+                    opacity: (!pattern || isGenerating || isGeneratingPDF || isGeneratingSVG) ? 0.6 : 1,
+                    cursor: (!pattern || isGenerating || isGeneratingPDF || isGeneratingSVG) ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  {isGeneratingPDF ? 'Generating...' : '📄 Pattern Print'}
+                </button>
+
+                <button 
+                  onClick={handleDownloadPureSVG}
+                  disabled={!pattern || isGenerating || isGeneratingPDF || isGeneratingSVG}
+                  className="convert-download-btn convert-svg-btn"
+                  style={{ 
+                    fontFamily: 'Baskervville, serif',
+                    fontWeight: 700,
+                    fontSize: '0.85rem', 
+                    padding: '8px 12px',
+                    width: '100%', // Full width
+                    backgroundColor: (!pattern || isGenerating || isGeneratingPDF || isGeneratingSVG) ? '#A04747' : '#A04747',
+                    color: '#343131',
+                    border: 'none',
+                    borderRadius: '4px',
+                    opacity: (!pattern || isGenerating || isGeneratingPDF || isGeneratingSVG) ? 0.6 : 1,
+                    cursor: (!pattern || isGenerating || isGeneratingPDF || isGeneratingSVG) ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  {isGeneratingSVG ? 'Generating...' : '🎨 SVG Export'}
+                </button>
+              </div>
+            ) : (
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                height: '100%',
+                color: '#666',
+                fontFamily: 'Baskervville, serif',
+                fontWeight: 500,
+                fontSize: '0.9rem'
+              }}>
+                Download available after pattern generation
+              </div>
+            )}
+          </div>
+
+          {/* Div8: Additional Area */}
+          <div className="div8">
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              height: '100%',
               color: 'black',
+              fontFamily: 'Baskervville, serif',
+              fontWeight: 500,
               fontSize: '0.9rem'
             }}>
-              이미지가 클수록 최대 5분까지 시간이 소요됩니다.
+              Additional Area (div8)
             </div>
-          )}
+          </div>
+
         </div>
-
-        {/* Error Display */}
-        {patternError && (
-          <div style={{ 
-            marginTop: '1rem',
-            padding: '1rem',
-            border: '2px solid red',
-            backgroundColor: 'rgba(255, 0, 0, 0.1)',
-            color: 'red',
-            fontWeight: 'bold'
-          }}>
-            오류: {patternError}
-          </div>
-        )}
-
-        {/* Pattern Statistics */}
-        {pattern && colorStatistics && (
-          <div style={{ 
-            marginTop: '2rem',
-            padding: '1rem',
-            border: '2px solid black',
-            backgroundColor: 'rgba(0, 0, 0, 0.05)'
-          }}>
-            <h3 style={{ fontWeight: 'bold', marginBottom: '1rem' }}>
-              도안 통계
-            </h3>
-            <div style={{ fontSize: '0.9rem' }}>
-              <p><strong>설정된 DMC 색상 개수:</strong> {pattern.statistics.guaranteedColors}개</p>
-              <p><strong>선택 품질:</strong> {(pattern.statistics.selectionQuality * 100).toFixed(1)}%</p>
-              <p><strong>총 비즈 개수:</strong> {pattern.statistics.totalPixels.toLocaleString()}개</p>
-              <p><strong>분석 전략:</strong> {pattern.dmcPalette.analysisData.selectionStrategy}</p>
-            </div>
-            
-            <h4 style={{ fontWeight: 'bold', marginTop: '1rem', marginBottom: '0.5rem' }}>
-              색상별 사용량 (상위 5개)
-            </h4>
-            <div style={{ fontSize: '0.8rem' }}>
-              {colorStatistics.slice(0, 5).map((stat, index) => (
-                <div key={stat.dmcColor.code} style={{ marginBottom: '0.3rem' }}>
-                  <strong>DMC {stat.dmcColor.code}</strong> ({stat.dmcColor.name}): {stat.count}개 ({stat.percentage.toFixed(1)}%)
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
 
-      {/* 하단 섹션: 도안 미리보기와 색상 테이블 */}
-      {pattern && (
-        <div>
-          {/* 도안 미리보기 */}
-          <div style={{ marginBottom: '2rem' }}>
-            <h2 style={{ fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-              도안 미리보기
-            </h2>
-            <PreviewPanel
-              imageData={imageData}
-              targetWidth={targetWidth}
-              beadType={beadType}
-              colorCount={colorCount}
-              imageWidth={imageWidth}
-              imageHeight={imageHeight}
-              dmcPattern={pattern}
-              dmcPreviewUrl={previewImageUrl}
-              isGeneratingPattern={isGenerating}
-              calculatedSize={calculatedSize} // 계산된 크기 정보 전달
-            />
-          </div>
-
-          {/* 색상 테이블 */}
-          <div>
-            <DMCColorTable pattern={pattern} />
-          </div>
-
-
-
-          <div style={{ height: '30px' }}></div>
-          {/* 도안 다운로드 버튼들 */}
-          <div className="convert-download-section" style={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'center',
-            gap: '1rem',
-            width: '100%',
-            marginTop: '1rem',
-            flexWrap: 'wrap'
-          }}>
-            <button 
-              onClick={handleDownloadIntegrated}
-              disabled={!pattern || isGenerating || isGeneratingPDF}
-              className="convert-download-btn convert-dmc-btn"
-              style={{ 
-                fontSize: '1rem', 
-                padding: '12px 24px',
-                backgroundColor: (!pattern || isGenerating || isGeneratingPDF) ? '#ccc' : '#28a745',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                opacity: (!pattern || isGenerating || isGeneratingPDF) ? 0.6 : 1,
-                cursor: (!pattern || isGenerating || isGeneratingPDF) ? 'not-allowed' : 'pointer',
-                fontWeight: 'bold'
-              }}
-            >
-              {isGeneratingPDF ? 'DMC TABLE 생성 중...' : '📊 DMC TABLE'}
-            </button>
-
-            <button 
-              onClick={handleDownloadVectorPDF}
-              disabled={!pattern || isGenerating || isGeneratingPDF}
-              className="convert-download-btn convert-pattern-btn"
-              style={{ 
-                fontSize: '1rem', 
-                padding: '12px 24px',
-                backgroundColor: (!pattern || isGenerating || isGeneratingPDF) ? '#ccc' : '#8b5cf6',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                opacity: (!pattern || isGenerating || isGeneratingPDF) ? 0.6 : 1,
-                cursor: (!pattern || isGenerating || isGeneratingPDF) ? 'not-allowed' : 'pointer',
-                fontWeight: 'bold'
-              }}
-            >
-              {isGeneratingPDF ? '도안 출력 생성 중...' : '📄 도안 출력'}
-            </button>
-            
-          </div>
-          
-          {/* 사용법 안내 */}
-          <div style={{
-            textAlign: 'center',
-            marginTop: '1.5rem',
-            fontSize: '0.9rem',
-            color: '#666',
-            maxWidth: '800px',
-            margin: '1.5rem auto 0'
-          }}>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '1rem',
-              marginBottom: '1rem'
-            }}>
-              <div style={{ padding: '0.5rem', backgroundColor: 'rgba(40,167,69,0.1)', borderRadius: '4px' }}>
-                <strong>📊 DMC TABLE</strong><br/>
-                DMC 컬러표만 포함
-              </div>
-              <div style={{ padding: '0.5rem', backgroundColor: 'rgba(139,92,246,0.1)', borderRadius: '4px' }}>
-                <strong>📄 도안 출력</strong><br/>
-                무한확대 가능한 완벽 벡터
-              </div>
-            </div>
-          </div>
-          <div style={{ height: '100px' }}></div>
-        </div>
-      )}
-      </div>
-
-      {/* PDF Generation Status */}
-      {isGeneratingPDF && (
+      {/* PDF/SVG Generation Status */}
+      {(isGeneratingPDF || isGeneratingSVG) && (
         <div style={{
           position: 'fixed',
           top: 0,
@@ -620,17 +738,17 @@ export default function ConvertPage() {
               animation: 'spin 1s linear infinite',
               margin: '0 auto 1rem'
             }} />
-            <h3 style={{ marginBottom: '0.5rem' }}>
-              PDF 생성 중...
+            <h3 style={{ fontFamily: 'Baskervville, serif', fontWeight: 700, marginBottom: '0.5rem' }}>
+              {isGeneratingPDF ? 'Generating PDF...' : 'Generating SVG...'}
             </h3>
             
             
-            <p style={{ color: '#666', fontSize: '0.9rem', marginBottom: '1rem' }}>
-              PDF 생성이 진행 중입니다. 잠시만 기다려주세요.
+            <p style={{ fontFamily: 'Baskervville, serif', fontWeight: 500, color: '#666', fontSize: '0.9rem', marginBottom: '1rem' }}>
+              {isGeneratingPDF ? 'PDF generation is in progress.' : 'SVG generation is in progress.'} Please wait a moment.
             </p>
             
             
-            {isGeneratingPDF && (
+            {(isGeneratingPDF || isGeneratingSVG) && (
               <div style={{
                 fontSize: '0.8rem',
                 color: '#999',
@@ -641,11 +759,24 @@ export default function ConvertPage() {
                 borderRadius: '4px',
                 border: '1px solid #eee'
               }}>
-                <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#28a745' }}>
-                  📊 DMC TABLE 생성 중
-                </div>
-                • DMC 색상표와 아이콘 정보 준비 중<br/>
-                • 잠시만 기다려주세요...
+                {isGeneratingPDF && (
+                  <>
+                    <div style={{ fontFamily: 'Baskervville, serif', fontWeight: 700, marginBottom: '0.5rem', color: '#28a745' }}>
+                      📊 Generating DMC TABLE
+                    </div>
+                    • Preparing DMC color table and icon information<br/>
+                    • Please wait a moment...
+                  </>
+                )}
+                {isGeneratingSVG && (
+                  <>
+                    <div style={{ fontFamily: 'Baskervville, serif', fontWeight: 700, marginBottom: '0.5rem', color: '#10b981' }}>
+                      🎨 Generating SVG File
+                    </div>
+                    • Generating lightweight vector file<br/>
+                    • Download will start shortly...
+                  </>
+                )}
               </div>
             )}
           </div>

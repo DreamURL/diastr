@@ -12,7 +12,7 @@ export interface DMCColor {
 // DMC Color Database parsed from DMC_to_RGB.md
 export const DMC_COLORS: DMCColor[] = [
   { code: "Ecru", name: "Ecru/off-white", r: 240, g: 234, b: 218, hex: "f0eada" },
-  { code: "Snow white", name: "Snow white", r: 255, g: 255, b: 255, hex: "ffffff" },
+  { code: "5200", name: "Snow white", r: 255, g: 255, b: 255, hex: "ffffff" },
   { code: "White", name: "White", r: 252, g: 251, b: 248, hex: "fcfbf8" },
   { code: "150", name: "Red - Bright", r: 171, g: 2, b: 73, hex: "ab0249" },
   { code: "151", name: "Pink", r: 240, g: 206, b: 212, hex: "f0ced4" },

@@ -39,7 +39,6 @@ export default function PatternVisualization({
   const legendRef = useRef<HTMLCanvasElement>(null)
   const [patternUrl, setPatternUrl] = useState<string>('')
   const [legendUrl, setLegendUrl] = useState<string>('')
-  const [renderStats, setRenderStats] = useState<any>(null)
   const [isRendering, setIsRendering] = useState(false)
   const [renderError, setRenderError] = useState<string>('')
 
@@ -58,15 +57,6 @@ export default function PatternVisualization({
           const svgDataUrl = await createWebPreviewSVG(pattern, maxSize)
           setPatternUrl(svgDataUrl)
           
-          // Set basic stats for SVG rendering
-          setRenderStats({
-            width: pattern.config.beadGridWidth,
-            height: pattern.config.beadGridHeight,
-            totalCells: pattern.config.beadGridWidth * pattern.config.beadGridHeight,
-            uniqueColors: pattern.dmcPalette.selectedColors.length,
-            renderType: 'SVG',
-            fileSize: svgDataUrl.length
-          })
 
           // Note: SVG legends not implemented yet, fallback to canvas if needed
           if (showLegend) {
@@ -98,7 +88,6 @@ export default function PatternVisualization({
 
           const url = canvasToDataURL(canvas)
           setPatternUrl(url)
-          setRenderStats({ ...stats, renderType: 'Canvas' })
 
           // Create legend if requested
           if (showLegend) {
@@ -130,7 +119,6 @@ export default function PatternVisualization({
 
             const url = canvasToDataURL(canvas)
             setPatternUrl(url)
-            setRenderStats({ ...stats, renderType: 'Canvas (fallback)' })
             setRenderError('')  // Clear error since fallback worked
           } catch (fallbackError) {
             console.error('Canvas fallback also failed:', fallbackError)
@@ -175,50 +163,56 @@ export default function PatternVisualization({
   }
 
   return (
-    <div className={`pattern-visualization ${className}`}>
+    <div className={`pattern-visualization ${className}`} style={{ 
+      width: '100%', 
+      height: '100%', 
+      display: 'flex', 
+      flexDirection: 'column' 
+    }}>
       {/* Main Pattern */}
-      <div className="pattern-main" style={{ marginBottom: '1rem' }}>
+      <div className="pattern-main" style={{ 
+        flex: 1, 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        minHeight: 0
+      }}>
 
         {patternUrl ? (
-          <div>
-            <div style={{ border: '2px solid black', display: 'inline-block' }}>
+          <>
+            <div style={{ 
+              flex: 1,
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: '4px',
+              minHeight: 0,
+              maxHeight: '100%',
+              overflow: 'hidden'
+            }}>
               <img 
                 src={patternUrl}
                 alt="Cross Stitch Pattern"
                 style={{ 
                   maxWidth: '100%',
+                  maxHeight: '100%',
+                  width: 'auto',
                   height: 'auto',
                   display: 'block',
+                  objectFit: 'contain', // Ensures image fits without cropping
+                  border: '2px solid black',
                   // 🎯 FORCE CLEAN RENDERING: Remove any potential grid artifacts
                   imageRendering: 'pixelated',
                   filter: 'none',
-                  border: 'none',
                   outline: 'none',
                   boxShadow: 'none'
                 }}
               />
             </div>
             
-            {/* 🚀 Render info badge */}
-            {renderStats && (
-              <div style={{
-                marginTop: '0.5rem',
-                padding: '0.25rem 0.5rem',
-                backgroundColor: renderStats.renderType === 'SVG' ? 'rgba(139,92,246,0.1)' : 'rgba(0,123,255,0.1)',
-                border: `1px solid ${renderStats.renderType === 'SVG' ? '#8b5cf6' : '#007bff'}`,
-                borderRadius: '12px',
-                fontSize: '0.7rem',
-                display: 'inline-block',
-                color: renderStats.renderType === 'SVG' ? '#8b5cf6' : '#007bff',
-                fontWeight: 'bold'
-              }}>
-                {renderStats.renderType === 'SVG' ? '🎨 SVG (가벼움)' : 
-                 renderStats.renderType === 'Canvas (fallback)' ? '🔄 Canvas (폴백)' : 
-                 '🖼️ Canvas'}
-                {renderStats.fileSize && ` • ${Math.round(renderStats.fileSize / 1024)}KB`}
-              </div>
-            )}
-          </div>
+          </>
         ) : (
           <div style={{
             width: '300px',
@@ -229,7 +223,7 @@ export default function PatternVisualization({
             justifyContent: 'center',
             backgroundColor: 'rgba(0,0,0,0.05)'
           }}>
-            <p>잠시만 기다려 주세요.</p>
+            <p>Please wait a moment.</p>
           </div>
         )}
       </div>

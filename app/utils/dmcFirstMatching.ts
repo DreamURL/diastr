@@ -487,6 +487,56 @@ function findClosestDMCFromPalette(
   return { dmcColor: bestMatch.dmc, distance: bestDistance }
 }
 
+/**
+ * 🎯 NEW: Pixelize image using only custom DMC palette
+ */
+function pixelizeWithCustomDMCPalette(
+  imageData: ImageData,
+  config: PixelizationConfig,
+  customPalette: DMCColor[]
+): FullMatchedPixel[] {
+  const pixels: FullMatchedPixel[] = []
+  const scaleX = imageData.width / config.beadGridWidth
+  const scaleY = imageData.height / config.beadGridHeight
+  
+  // Pre-calculate LAB values for custom palette
+  const customPaletteLabs = customPalette.map(dmc => ({
+    dmc,
+    lab: DMC_LAB_CACHE.get(dmc.code)!
+  }))
+  
+  for (let beadY = 0; beadY < config.beadGridHeight; beadY++) {
+    for (let beadX = 0; beadX < config.beadGridWidth; beadX++) {
+      // Calculate source pixel region for this bead
+      const startX = Math.floor(beadX * scaleX)
+      const startY = Math.floor(beadY * scaleY)
+      const endX = Math.floor((beadX + 1) * scaleX)
+      const endY = Math.floor((beadY + 1) * scaleY)
+      
+      // Calculate average color for this bead region
+      const averageColor = calculateRegionAverageColor(imageData, startX, startY, endX, endY)
+      const centerColor = getPixelColorAt(imageData, 
+        Math.floor((startX + endX) / 2), 
+        Math.floor((startY + endY) / 2)
+      )
+      
+      // Find closest DMC color from custom palette only
+      const { dmcColor, distance } = findClosestDMCFromPalette(averageColor, customPaletteLabs)
+      
+      pixels.push({
+        x: beadX,
+        y: beadY,
+        color: centerColor,
+        averageColor: averageColor,
+        matchedDMCColor: dmcColor,
+        matchingDistance: distance
+      })
+    }
+  }
+  
+  return pixels
+}
+
 // =============================================================================
 // NEW ALGORITHM: Full DMC Matching → Color Reduction
 // =============================================================================
@@ -526,6 +576,7 @@ export interface FullDMCPattern {
     targetColorCount: number
     qualityScore: number // 0-1, higher = better color accuracy
     reductionStrategy: string
+    averageMatchingDistance: number // 🎯 NEW: Average color matching distance
   }
 }
 
@@ -824,15 +875,73 @@ function findClosestDMCFromAllColors(
 
 /**
  * NEW MAIN FUNCTION: Generate pattern with quality-first approach
+ * 🎯 NEW: Support for user-specified custom colors
  */
 export async function generateFullDMCPattern(
   imageData: ImageData,
   config: PixelizationConfig,
-  targetColorCount: number
+  targetColorCount: number,
+  analysisQuality: 'fast' | 'standard' | 'high' = 'standard',
+  customColorCodes?: string[]
 ): Promise<FullDMCPattern> {
   
-  // CRITICAL DEBUG: Track color count changes throughout the process
-  console.log(`🎯 Target color count: ${targetColorCount}`)
+  // 🎯 NEW: Handle custom colors vs. full color mode
+  if (customColorCodes && customColorCodes.length > 0) {
+    console.log(`🎨 CUSTOM COLOR MODE: Using ${customColorCodes.length} user-specified colors`)
+    console.log(`🎯 Custom colors: ${customColorCodes.slice(0, 10).join(', ')}${customColorCodes.length > 10 ? '...' : ''}`)
+    
+    // Create custom palette from user-specified codes
+    const customPalette: DMCColor[] = []
+    for (const code of customColorCodes) {
+      const dmcColor = DMC_COLOR_MAP.get(code)
+      if (dmcColor) {
+        customPalette.push(dmcColor)
+      } else {
+        console.warn(`⚠️ Invalid DMC code ignored: ${code}`)
+      }
+    }
+    
+    if (customPalette.length === 0) {
+      throw new Error('No valid DMC codes provided')
+    }
+    
+    console.log(`✅ Valid custom palette: ${customPalette.length} colors`)
+    
+    // PHASE 1: Match image pixels to custom palette only
+    const customMatchedPixels = pixelizeWithCustomDMCPalette(imageData, config, customPalette)
+    console.log(`📊 Phase 1 - Total pixels processed with custom palette: ${customMatchedPixels.length}`)
+    
+    // PHASE 2: Calculate usage for custom colors
+    const customColorUsage = analyzeColorUsage(customMatchedPixels)
+    console.log(`🎨 Phase 2 - Custom colors used: ${customColorUsage.length}/${customPalette.length}`)
+    
+    // Quality statistics for custom colors
+    const totalDistance = customMatchedPixels.reduce((sum, p) => sum + p.matchingDistance, 0)
+    const averageDistance = totalDistance / customMatchedPixels.length
+    const qualityScore = Math.max(0, 1 - (averageDistance / 30))
+    
+    const pattern: FullDMCPattern = {
+      fullMatchedPixels: customMatchedPixels,
+      colorUsage: customColorUsage,
+      reducedPalette: customPalette,
+      config,
+      statistics: {
+        totalPixels: customMatchedPixels.length,
+        originalColorCount: customPalette.length,
+        reducedColorCount: customColorUsage.length,
+        targetColorCount: customPalette.length, // 🎯 Custom colors: target = available colors
+        averageMatchingDistance: averageDistance,
+        reductionStrategy: `Custom palette (${customPalette.length} user-specified colors)`,
+        qualityScore
+      }
+    }
+    
+    console.log(`✅ CUSTOM COLOR pattern completed - Used ${customColorUsage.length}/${customPalette.length} custom colors`)
+    return pattern
+  }
+  
+  // ORIGINAL LOGIC: Full color mode
+  console.log(`🎯 FULL COLOR MODE: Target color count: ${targetColorCount}`)
   
   // PHASE 1: Full DMC matching (maximum quality)
   const fullMatchedPixels = pixelizeWithFullDMCMatching(imageData, config)
@@ -876,7 +985,8 @@ export async function generateFullDMCPattern(
       reducedColorCount: reducedPalette.length,
       targetColorCount,
       qualityScore,
-      reductionStrategy: strategy
+      reductionStrategy: strategy,
+      averageMatchingDistance: averageDistance
     }
   }
   

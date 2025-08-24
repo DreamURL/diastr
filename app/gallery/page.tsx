@@ -58,32 +58,46 @@ export default function UpscalingPage() {
         // Navigate to convert page using Next.js router
         router.push('/convert');
       } else {
-        throw new Error('이미지 저장에 실패했습니다.');
+        throw new Error('Failed to save image.');
       }
     } catch (error) {
       console.error('Failed to create pattern from upscaled image:', error);
-      const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.';
-      alert(`도안 만들기 실패: ${errorMessage}\n\n다시 시도해주세요.`);
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
+      alert(`Failed to create pattern: ${errorMessage}\n\nPlease try again.`);
     } finally {
       setIsCreatingPattern(false);
     }
   };
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem' }}>
-      <h1 style={{ 
+    <div style={{ 
+      maxWidth: '1200px', 
+      margin: '0 auto', 
+      padding: '2rem',
+      fontFamily: 'Baskervville, serif',
+      fontWeight: '500'
+    }}>
+      <h1 style={{
+        marginTop: '5rem',
         fontSize: '2.5rem', 
-        fontWeight: 'bold', 
+        fontWeight: '500', 
         marginBottom: '1rem', 
-        textAlign: 'center' 
+        textAlign: 'center',
+        fontFamily: 'Baskervville, serif'
       }}>
-        AI 이미지 업스케일링
+        Image Upscaling
       </h1>
       
       <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-        <p style={{ fontSize: '1.1rem', lineHeight: '1.6', color: '#666' }}>
-          이미지를 고품질로 확대하여 보석십자수 도안 제작에 활용하세요.<br/>
-          브라우저에서 직접 처리하여 무료로 사용할 수 있습니다.
+        <p style={{ 
+          fontSize: '1.1rem', 
+          lineHeight: '1.6', 
+          color: '#666',
+          fontFamily: 'Baskervville, serif',
+          fontWeight: '500'
+        }}>
+          Enhance images to high quality for creating Diamond painting patterns.<br/>
+          Process directly in your browser for free use.
         </p>
       </div>
 
@@ -93,14 +107,14 @@ export default function UpscalingPage() {
         gap: '2rem',
         alignItems: 'start'
       }}>
-        {/* 업스케일링 패널 */}
+        {/* Upscaling Panel */}
         <div>
           <LocalUpscalingPanel 
             onUpscaleComplete={handleUpscaleComplete}
           />
         </div>
 
-        {/* 결과 히스토리 */}
+        {/* Results History */}
         {upscaledResults.length > 0 && (
           <div>
             <div style={{ 
@@ -109,8 +123,12 @@ export default function UpscalingPage() {
               alignItems: 'center',
               marginBottom: '1.5rem' 
             }}>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
-                업스케일링 결과 ({upscaledResults.length})
+              <h3 style={{ 
+                fontSize: '1.5rem', 
+                fontWeight: '500',
+                fontFamily: 'Baskervville, serif'
+              }}>
+                Upscaling Results ({upscaledResults.length})
               </h3>
               <button
                 onClick={clearResults}
@@ -120,10 +138,12 @@ export default function UpscalingPage() {
                   backgroundColor: 'transparent',
                   color: 'black',
                   border: '2px solid black',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  fontFamily: 'Baskervville, serif',
+                  fontWeight: '500'
                 }}
               >
-                전체 삭제
+                Clear All
               </button>
             </div>
 
@@ -141,8 +161,13 @@ export default function UpscalingPage() {
                     ? '1px solid #ddd' : 'none'
                 }}>
                   <div style={{ marginBottom: '1rem' }}>
-                    <p style={{ fontSize: '0.9rem', color: '#666' }}>
-                      {result.timestamp.toLocaleString('ko-KR')}
+                    <p style={{ 
+                      fontSize: '0.9rem', 
+                      color: '#666',
+                      fontFamily: 'Baskervville, serif',
+                      fontWeight: '500'
+                    }}>
+                      {result.timestamp.toLocaleString('en-US')}
                     </p>
                   </div>
 
@@ -177,10 +202,12 @@ export default function UpscalingPage() {
                         backgroundColor: 'black',
                         color: 'white',
                         border: 'none',
-                        cursor: 'pointer'
+                        cursor: 'pointer',
+                        fontFamily: 'Baskervville, serif',
+                        fontWeight: '500'
                       }}
                     >
-                      다운로드
+                      Download
                     </button>
                     
                     <button
@@ -195,10 +222,12 @@ export default function UpscalingPage() {
                         border: '2px solid black',
                         cursor: isCreatingPattern ? 'not-allowed' : 'pointer',
                         opacity: isCreatingPattern ? 0.7 : 1,
-                        transition: 'all 0.2s ease'
+                        transition: 'all 0.2s ease',
+                        fontFamily: 'Baskervville, serif',
+                        fontWeight: '500'
                       }}
                     >
-                      {isCreatingPattern ? '처리중...' : '도안 만들기'}
+                      {isCreatingPattern ? 'Processing...' : 'Create Pattern'}
                     </button>
                   </div>
                 </div>
@@ -208,15 +237,20 @@ export default function UpscalingPage() {
         )}
       </div>
 
-      {/* 사용법 안내 */}
+      {/* Usage Instructions */}
       <div style={{
         marginTop: '3rem',
         padding: '2rem',
         border: '2px solid black',
         backgroundColor: 'rgba(0,0,0,0.02)'
       }}>
-        <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>
-          📝 이미지 업스케일링 사용법
+        <h3 style={{ 
+          fontSize: '1.5rem', 
+          fontWeight: '500', 
+          marginBottom: '1.5rem',
+          fontFamily: 'Baskervville, serif'
+        }}>
+          📝 Image Upscaling Guide
         </h3>
         
         <div style={{ 
@@ -225,25 +259,50 @@ export default function UpscalingPage() {
           gap: '2rem' 
         }}>
           <div>
-            <h4 style={{ fontWeight: 'bold', marginBottom: '1rem', color: '#333' }}>
-              🖥️ 브라우저 로컬 처리
+            <h4 style={{ 
+              fontWeight: '500', 
+              marginBottom: '1rem', 
+              color: '#333',
+              fontFamily: 'Baskervville, serif'
+            }}>
+              🖥️ Browser Local Processing
             </h4>
-            <ul style={{ lineHeight: '1.6', paddingLeft: '1rem' }}>
-              <li><strong>장점:</strong> 무료, 즉시 처리, 인터넷 불필요</li>
-              <li><strong>제한:</strong> 2배 확대, 기본 품질</li>
-              <li><strong>권장:</strong> 빠른 테스트나 작은 이미지</li>
+            <ul style={{ 
+              lineHeight: '1.6', 
+              paddingLeft: '1rem',
+              fontFamily: 'Baskervville, serif',
+              fontWeight: '500'
+            }}>
+              <li><strong>Advantages:</strong> Free, instant processing, no internet required</li>
+              <li><strong>Limitations:</strong> 2x enlargement, basic quality</li>
+              <li><strong>Recommended for:</strong> Quick testing or small images</li>
             </ul>
           </div>
           
         </div>
         
-        <div style={{ marginTop: '2rem', padding: '1rem', backgroundColor: 'rgba(0,0,0,0.05)' }}>
-          <h4 style={{ fontWeight: 'bold', marginBottom: '1rem' }}>💡 업스케일링 팁</h4>
-          <ul style={{ lineHeight: '1.6', paddingLeft: '1rem' }}>
-            <li>보석십자수 도안 제작 전 이미지를 업스케일링하면 더 선명한 결과를 얻을 수 있습니다</li>
-            <li>작은 이미지 (300x300 이하)는 특히 업스케일링 효과가 큽니다</li>
-            <li><strong>업스케일링 후 "도안 만들기" 버튼으로 바로 변환 페이지로 이동합니다</strong></li>
-            <li>업스케일링된 이미지는 자동으로 저장되어 변환 페이지에서 바로 사용됩니다</li>
+        <div style={{ 
+          marginTop: '2rem', 
+          padding: '1rem', 
+          backgroundColor: 'rgba(0,0,0,0.05)',
+          fontFamily: 'Baskervville, serif',
+          fontWeight: '500'
+        }}>
+          <h4 style={{ 
+            fontWeight: '500', 
+            marginBottom: '1rem',
+            fontFamily: 'Baskervville, serif'
+          }}>💡 Upscaling Tips</h4>
+          <ul style={{ 
+            lineHeight: '1.6', 
+            paddingLeft: '1rem',
+            fontFamily: 'Baskervville, serif',
+            fontWeight: '500'
+          }}>
+            <li>Upscaling images before creating Diamond painting patterns produces sharper results</li>
+            <li>Small images (300x300 or smaller) show particularly good upscaling effects</li>
+            <li><strong>After upscaling, use the "Create Pattern" button to go directly to the conversion page</strong></li>
+            <li>Upscaled images are automatically saved and can be used immediately on the conversion page</li>
           </ul>
         </div>
       </div>
@@ -283,24 +342,29 @@ export default function UpscalingPage() {
             <h3 style={{ 
               marginBottom: '1rem', 
               fontSize: '1.3rem',
-              fontWeight: 'bold'
+              fontWeight: '500',
+              fontFamily: 'Baskervville, serif'
             }}>
-              도안 만들기 준비 중...
+              Preparing to Create Pattern...
             </h3>
             <p style={{ 
               color: '#666', 
               fontSize: '1rem',
-              lineHeight: '1.5' 
+              lineHeight: '1.5',
+              fontFamily: 'Baskervville, serif',
+              fontWeight: '500'
             }}>
-              업스케일링된 이미지를 저장하고<br/>
-              변환 페이지로 이동합니다.
+              Saving the upscaled image and<br/>
+              navigating to the conversion page.
             </p>
             <div style={{
               marginTop: '1.5rem',
               fontSize: '0.9rem',
-              color: '#999'
+              color: '#999',
+              fontFamily: 'Baskervville, serif',
+              fontWeight: '500'
             }}>
-              잠시만 기다려주세요...
+              Please wait a moment...
             </div>
           </div>
         </div>

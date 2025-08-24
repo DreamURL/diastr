@@ -35,13 +35,13 @@ export default function ImageUpload({ onImageUpload }: ImageUploadProps) {
   const handleFileSelect = (file: File) => {
     // Check file size (50MB limit)
     if (file.size > 50 * 1024 * 1024) {
-      alert('파일 크기는 50MB 이하로 제한됩니다.')
+      alert('File size is limited to 50MB or less.')
       return
     }
 
     // Check file type
     if (!file.type.startsWith('image/')) {
-      alert('이미지 파일만 업로드 가능합니다.')
+      alert('Only image files can be uploaded.')
       return
     }
 
@@ -105,7 +105,9 @@ export default function ImageUpload({ onImageUpload }: ImageUploadProps) {
               />
             </div>
             <div className="success-icon">✓</div>
-            <p>이미지가 업로드되었습니다. 변환 페이지로 이동합니다.</p>
+            <p style={{ fontFamily: 'Baskervville, serif', fontWeight: '500' }}>
+              Image uploaded successfully. Moving to conversion page.
+            </p>
           </div>
         ) : (
           <div className="upload-content">
@@ -126,11 +128,26 @@ export default function ImageUpload({ onImageUpload }: ImageUploadProps) {
                 <line x1="12" y1="3" x2="12" y2="15"/>
               </svg>
             </div>
-            <p style={{ fontSize: '1.3rem', marginBottom: '1.2rem', fontWeight: '600' }}>
-              이미지를 드래그하여 놓거나 클릭하여 업로드하세요
+            <p style={{ 
+              fontSize: '1.3rem', 
+              marginBottom: '1.2rem', 
+              fontFamily: 'Baskervville, serif',
+              fontWeight: '500'
+            }}>
+              Drag and drop an image 
+              <br/>
+              or click to upload 
             </p>
-            <p style={{ fontSize: '0.95rem', color: '#666', opacity: '0.8' }}>
-              지원 형식: JPG, PNG, GIF, WebP (최대 50MB)
+            <p style={{ 
+              fontSize: '0.95rem', 
+              color: '#666', 
+              opacity: '0.8',
+              fontFamily: 'Baskervville, serif',
+              fontWeight: '500'
+            }}>
+              Supported formats: 
+              <br/>
+              JPG, PNG, WebP (Max 50MB)
             </p>
           </div>
         )}

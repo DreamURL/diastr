@@ -1,28 +1,28 @@
 import './globals.css'
 import type { Metadata } from 'next'
-import ResponsiveNavigation from './components/ResponsiveNavigation'
+import PillNav from './components/PillNav'
 
 export const metadata: Metadata = {
   title: {
-    default: '보석십자수 도안 변환기 - 이미지를 아름다운 도안으로',
-    template: '%s | 보석십자수 도안 변환기'
+    default: 'Diamond painting Pattern Converter - Transform Images into Beautiful Patterns',
+    template: '%s | Diamond painting Pattern Converter'
   },
-  description: '이미지를 업로드하여 아름다운 보석십자수 도안으로 변환하세요. DMC 색상 매칭, 실시간 미리보기, PDF 다운로드까지 모든 기능을 무료로 제공합니다.',
+  description: 'Upload an image to convert it into a beautiful Diamond painting pattern. DMC color matching, real-time preview, PDF download - all features available for free.',
   keywords: [
-    '보석십자수',
-    '도안 변환',
-    '이미지 변환',
-    'DMC 색상',
-    '보석십자수 패턴',
-    '픽셀 아트',
-    '도안 생성',
-    'AI 업스케일링',
-    '무료 도구',
-    '보석십자수 도안'
+    'Diamond painting',
+    'pattern conversion',
+    'image conversion',
+    'DMC colors',
+    'Diamond painting patterns',
+    'pixel art',
+    'pattern generation',
+    'AI upscaling',
+    'free tools',
+    'Diamond painting patterns'
   ],
-  authors: [{ name: '보석십자수 도안 변환기' }],
-  creator: '보석십자수 도안 변환기',
-  publisher: '보석십자수 도안 변환기',
+  authors: [{ name: 'Diamond painting Pattern Converter' }],
+  creator: 'Diamond painting Pattern Converter',
+  publisher: 'Diamond painting Pattern Converter',
   formatDetection: {
     email: false,
     address: false,
@@ -34,25 +34,25 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: 'website',
-    locale: 'ko_KR',
+    locale: 'en_US',
     url: 'https://beadsmapmaker.vercel.app', // 실제 도메인으로 변경 필요
-    title: '보석십자수 도안 변환기 - 이미지를 아름다운 도안으로',
-    description: '이미지를 업로드하여 아름다운 보석십자수 도안으로 변환하세요. DMC 색상 매칭, 실시간 미리보기, PDF 다운로드까지 모든 기능을 무료로 제공합니다.',
-    siteName: '보석십자수 도안 변환기',
+    title: 'Diamond painting Pattern Converter - Transform Images into Beautiful Patterns',
+    description: 'Upload an image to convert it into a beautiful Diamond painting pattern. DMC color matching, real-time preview, PDF download - all features available for free.',
+    siteName: 'Diamond painting Pattern Converter',
     images: [
       {
         url: 'https://beadsmapmaker.vercel.app/images/Thumbnail.jpeg?v=2',
         width: 1200,
         height: 630,
-        alt: '보석십자수 도안 변환기 썸네일 이미지',
+        alt: 'Diamond painting Pattern Converter thumbnail image',
         type: 'image/jpeg',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: '보석십자수 도안 변환기 - 이미지를 아름다운 도안으로',
-    description: '이미지를 업로드하여 아름다운 보석십자수 도안으로 변환하세요. DMC 색상 매칭, 실시간 미리보기, PDF 다운로드까지 모든 기능을 무료로 제공합니다.',
+    title: 'Diamond painting Pattern Converter - Transform Images into Beautiful Patterns',
+    description: 'Upload an image to convert it into a beautiful Diamond painting pattern. DMC color matching, real-time preview, PDF download - all features available for free.',
     images: ['https://beadsmapmaker.vercel.app/images/Thumbnail.jpeg?v=2'],
   },
   robots: {
@@ -68,11 +68,11 @@ export const metadata: Metadata = {
   },
   verification: {
     google: 'your-google-verification-code', // Google Search Console에서 제공하는 코드
-    yandex: 'your-yandex-verification-code', // Yandex Webmaster에서 제공하는 코드
+    yandex: 'your-yahoo-verification-code', // Yandex Webmaster에서 제공하는 코드
     yahoo: 'your-yahoo-verification-code', // Yahoo Site Explorer에서 제공하는 코드
   },
   category: 'crafts',
-  classification: '보석십자수 도구',
+  classification: 'Diamond painting Tools',
   manifest: '/manifest.json',
   icons: {
     icon: [
@@ -92,28 +92,36 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ko">
+    <html lang="en">
       <head>
         <link rel="icon" href="/favicon.ico" type="image/x-icon" />
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
       </head>
-      <body>
-        <header className="header" style={{ alignItems: 'center', backgroundColor: 'white', position: 'relative', zIndex: 10, borderBottom: '2px solid black' }}>
-          <div className="container">
-            <ResponsiveNavigation />
-          </div>
-        </header>
-        <main className="main">
-          <div className="container">
-            {children}
-          </div>
+      <body style={{ fontFamily: 'Baskervville, serif', fontWeight: '500' }}>
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          width: '100%'
+        }}>
+          <PillNav
+            items={[
+              { label: 'Home', href: '/' },
+              { label: 'Convert', href: '/convert' },
+              { label: 'How to Use', href: '/use' },
+              { label: 'Upscaling', href: '/gallery' }
+            ]}
+            className="custom-nav"
+            ease="power2.easeOut"
+            baseColor="#000000"
+            pillColor="#ffffff"
+            hoveredPillTextColor="#ffffff"
+            pillTextColor="#000000"
+          />
+        </div>
+        <main className="main-overlay">
+          {children}
         </main>
-        <footer className="footer" style={{ backgroundColor: 'white', position: 'relative', zIndex: 10, borderTop: '2px solid black' }}>
-          <div className="container">
-            <p>&copy; 2025 보석십자수 도안 만들기. All rights reserved.</p>
-          </div>
-        </footer>
       </body>
     </html>
   )

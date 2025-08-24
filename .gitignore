@@ -226,3 +226,9 @@ config.local.*
 
 # Claude
 .claude/
+
+# Markdown files
+*.md
+
+# PDF files
+*.pdf
