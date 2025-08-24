@@ -75,13 +75,13 @@ export default function HomeContent() {
 
       {/* Gallery Section */}
       <div 
-        className="home-section home-gallery-section" 
+        className="home-section use-gallery-section" 
         role="img"
         aria-label="Diamond painting pattern conversion before and after comparison"
       >
         <div className="gallery-images-container">
           <div className="image-with-label">
-            <div className="image-label" style={{ fontFamily: 'Baskervville, serif', fontWeight: '700' }}>Before</div>
+            <div className="image-label" style={{ fontFamily: 'Baskervville, serif', fontWeight: '700', color: 'white' }}>Before</div>
             <Image
               src="/images/main_left.jpg"
               alt="Original image - before Diamond painting conversion"
@@ -93,7 +93,7 @@ export default function HomeContent() {
             />
           </div>
           <div className="image-with-label">
-            <div className="image-label" style={{ fontFamily: 'Baskervville, serif', fontWeight: '700' }}>After</div>
+            <div className="image-label" style={{ fontFamily: 'Baskervville, serif', fontWeight: '700', color: 'white' }}>After</div>
             <Image
               src="/images/main_right.jpeg"
               alt="Conversion result - Diamond painting pattern"
