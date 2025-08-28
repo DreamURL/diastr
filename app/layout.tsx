@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     siteName: 'Diamond painting Pattern Converter',
     images: [
       {
-        url: 'https://dreamurl.github.io/diastr/images/Thumbnail.jpeg?v=2',
+        url: `/images/Thumbnail.jpeg?v=${Date.now()}`,
         width: 1200,
         height: 630,
         alt: 'Diamond painting Pattern Converter thumbnail image',
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Diamond painting Pattern Converter - Transform Images into Beautiful Patterns',
     description: 'Upload an image to convert it into a beautiful Diamond painting pattern. DMC color matching, real-time preview, PDF download - all features available for free.',
-    images: ['https://dreamurl.github.io/diastr/images/Thumbnail.jpeg?v=2'],
+    images: [`/images/Thumbnail.jpeg?v=${Date.now()}`],
   },
   robots: {
     index: true,

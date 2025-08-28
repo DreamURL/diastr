@@ -5,11 +5,6 @@ export const metadata: Metadata = {
   title: 'Diamond painting Pattern Converter',
   description: 'Welcome to the Diamond painting Pattern Converter. Upload your images to convert them into beautiful Diamond painting patterns. We provide all features for free including DMC color matching, real-time preview, and PDF download.',
   keywords: ['Diamond painting', 'pattern conversion', 'image upload', 'DMC colors', 'free tool'],
-  openGraph: {
-    title: 'Diamond painting Pattern Converter - Home',
-    description: 'Upload your images to convert them into beautiful Diamond painting patterns. We provide all features for free including DMC color matching, real-time preview, and PDF download.',
-    images: ['/images/main1.png'],
-  },
 }
 
 export default function HomePage() {
