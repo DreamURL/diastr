@@ -67,9 +67,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: 'your-google-verification-code', 
-    yandex: 'your-yahoo-verification-code', 
-    yahoo: 'your-yahoo-verification-code', 
+    google: '8ffBOQzpKmyUUZgcFGz8hQ1Fn4S2uKyG5rirawBZWLg',
   },
   category: 'crafts',
   classification: 'Diamond painting Tools',
