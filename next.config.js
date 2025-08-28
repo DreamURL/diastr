@@ -7,6 +7,9 @@ const nextConfig = {
     domains: ['localhost'],
     unoptimized: true
   },
+  // GitHub Pages 배포를 위한 설정 - dreamurl.github.io/diastr/
+  basePath: '/diastr',
+  assetPrefix: '/diastr/',
 }
 
 module.exports = nextConfig
