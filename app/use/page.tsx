@@ -178,7 +178,7 @@ export default function UsePage() {
           <div className="image-with-label">
             <div className="image-label" style={{ fontFamily: 'Baskervville, serif', fontWeight: '700', color: 'white' }}>Before</div>
             <Image
-              src="/images/use_left.jpg"
+              src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/images/use_left.jpg`}
               alt="Diamond painting pattern creation process example"
               width={600}
               height={600}
@@ -190,7 +190,7 @@ export default function UsePage() {
           <div className="image-with-label">
             <div className="image-label" style={{ fontFamily: 'Baskervville, serif', fontWeight: '700', color: 'white' }}>After</div>
             <Image
-              src="/images/use_right.jpeg"
+              src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/images/use_right.jpeg`}
               alt="Finished Diamond painting pattern result example"
               width={600}
               height={600}

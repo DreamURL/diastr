@@ -2,20 +2,20 @@
   "name": "보석십자수 도안 변환기",
   "short_name": "보석십자수 변환기",
   "description": "이미지를 보석십자수 도안으로 변환하는 전문 도구",
-  "start_url": "/",
+  "start_url": "/diastr/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/icons/icon-192x192.png",
+      "src": "/diastr/icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-512x512.png",
+      "src": "/diastr/icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

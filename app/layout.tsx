@@ -28,20 +28,20 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://beadsmapmaker.vercel.app'), 
+  metadataBase: new URL('https://dreamurl.github.io/diastr'), 
   alternates: {
     canonical: '/',
   },
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://beadsmapmaker.vercel.app', 
+    url: 'https://dreamurl.github.io/diastr', 
     title: 'Diamond painting Pattern Converter - Transform Images into Beautiful Patterns',
     description: 'Upload an image to convert it into a beautiful Diamond painting pattern. DMC color matching, real-time preview, PDF download - all features available for free.',
     siteName: 'Diamond painting Pattern Converter',
     images: [
       {
-        url: 'https://beadsmapmaker.vercel.app/images/Thumbnail.jpeg?v=2',
+        url: 'https://dreamurl.github.io/diastr/images/Thumbnail.jpeg?v=2',
         width: 1200,
         height: 630,
         alt: 'Diamond painting Pattern Converter thumbnail image',
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Diamond painting Pattern Converter - Transform Images into Beautiful Patterns',
     description: 'Upload an image to convert it into a beautiful Diamond painting pattern. DMC color matching, real-time preview, PDF download - all features available for free.',
-    images: ['https://beadsmapmaker.vercel.app/images/Thumbnail.jpeg?v=2'],
+    images: ['https://dreamurl.github.io/diastr/images/Thumbnail.jpeg?v=2'],
   },
   robots: {
     index: true,
@@ -73,15 +73,15 @@ export const metadata: Metadata = {
   },
   category: 'crafts',
   classification: 'Diamond painting Tools',
-  manifest: '/manifest.json',
+  manifest: '/diastr/manifest.json',
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: 'any' },
-      { url: '/icons/icon-192x192.png', type: 'image/png', sizes: '192x192' },
-      { url: '/icons/icon-512x512.png', type: 'image/png', sizes: '512x512' },
+      { url: '/diastr/favicon.ico', sizes: 'any' },
+      { url: '/diastr/icons/icon-192x192.png', type: 'image/png', sizes: '192x192' },
+      { url: '/diastr/icons/icon-512x512.png', type: 'image/png', sizes: '512x512' },
     ],
     apple: [
-      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/diastr/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
     ],
   },
 }
@@ -94,9 +94,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+        <link rel="icon" href="/diastr/favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="/diastr/favicon.ico" type="image/x-icon" />
+        <link rel="apple-touch-icon" href="/diastr/icons/icon-192x192.png" />
       </head>
       <body style={{ fontFamily: 'Baskervville, serif', fontWeight: '500' }}>
         <div style={{ 

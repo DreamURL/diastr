@@ -83,7 +83,7 @@ export default function HomeContent() {
           <div className="image-with-label">
             <div className="image-label" style={{ fontFamily: 'Baskervville, serif', fontWeight: '700', color: 'white' }}>Before</div>
             <Image
-              src="/images/main_left.jpg"
+              src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/images/main_left.jpg`}
               alt="Original image - before Diamond painting conversion"
               width={600}
               height={600}
@@ -95,7 +95,7 @@ export default function HomeContent() {
           <div className="image-with-label">
             <div className="image-label" style={{ fontFamily: 'Baskervville, serif', fontWeight: '700', color: 'white' }}>After</div>
             <Image
-              src="/images/main_right.jpeg"
+              src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/images/main_right.jpeg`}
               alt="Conversion result - Diamond painting pattern"
               width={600}
               height={600}
