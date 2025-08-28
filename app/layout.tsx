@@ -28,14 +28,14 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://beadsmapmaker.vercel.app'), // 실제 도메인으로 변경 필요
+  metadataBase: new URL('https://beadsmapmaker.vercel.app'), 
   alternates: {
     canonical: '/',
   },
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://beadsmapmaker.vercel.app', // 실제 도메인으로 변경 필요
+    url: 'https://beadsmapmaker.vercel.app', 
     title: 'Diamond painting Pattern Converter - Transform Images into Beautiful Patterns',
     description: 'Upload an image to convert it into a beautiful Diamond painting pattern. DMC color matching, real-time preview, PDF download - all features available for free.',
     siteName: 'Diamond painting Pattern Converter',
@@ -67,9 +67,9 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: 'your-google-verification-code', // Google Search Console에서 제공하는 코드
-    yandex: 'your-yahoo-verification-code', // Yandex Webmaster에서 제공하는 코드
-    yahoo: 'your-yahoo-verification-code', // Yahoo Site Explorer에서 제공하는 코드
+    google: 'your-google-verification-code', 
+    yandex: 'your-yahoo-verification-code', 
+    yahoo: 'your-yahoo-verification-code', 
   },
   category: 'crafts',
   classification: 'Diamond painting Tools',

@@ -110,7 +110,7 @@ export default function ConvertPage() {
     loadStoredImage()
   }, [])
 
-  // 🎯 NEW: 색상 설정 확인 처리 함수 (사용자 지정 색상 지원)
+
   const handleConfirmColorSettings = async (currentColorCount: number, customColors?: string[]) => {
     if (!imageData || !imageWidth || !imageHeight || !targetWidth || !beadType) {
       alert('Image or pattern settings are not completed.')
@@ -120,14 +120,14 @@ export default function ConvertPage() {
     setIsCalculatingColors(true)
     
     try {
-      // 🎯 사용자 지정 색상 모드 처리
+
       if (customColors && customColors.length > 0) {
         setUseCustomColors(true)
         setCustomColorCodes(customColors)
         setPendingColorCount(customColors.length)
         setColorCount(customColors.length)
         
-        // 사용자 색상 모드에서는 color suggestions 계산 불필요
+
         setOptimalColors(customColors.length)
         setMaxColors(customColors.length)
         setColorConfirmed(true)
@@ -135,7 +135,7 @@ export default function ConvertPage() {
         alert(`Custom color settings confirmed.\nColors to use: ${customColors.length} (${customColors.slice(0, 5).join(', ')}${customColors.length > 5 ? ' and ' + (customColors.length - 5) + ' more' : ''})`)
         
       } else {
-        // 전체 색상 모드 처리 (기존 로직)
+
         setUseCustomColors(false)
         setCustomColorCodes([])
         setPendingColorCount(currentColorCount)
@@ -172,9 +172,9 @@ export default function ConvertPage() {
     }
   }
   
-  // 비즈 설정 확인 처리 함수
+
   const handleConfirmBeadSettings = () => {
-    // 입력 값 유효성 검사
+
     if (circularSize < 1.0 || circularSize > 10.0) {
       alert('Circular bead diameter must be between 1.0mm and 10.0mm.')
       return
@@ -185,7 +185,7 @@ export default function ConvertPage() {
       return
     }
     
-    // 확인된 값 적용
+
     setConfirmedCircularSize(circularSize)
     setConfirmedSquareSize(squareSize)
     setBeadSettingsConfirmed(true)
@@ -197,12 +197,12 @@ export default function ConvertPage() {
   const handleGeneratePreview = async () => {
     if (!imageData) return
     
-    // 현재 설정된 비즈 사이즈 가져오기
+
     const currentBeadSize = beadType === 'circular' 
       ? (beadSettingsConfirmed ? confirmedCircularSize : circularSize)
       : (beadSettingsConfirmed ? confirmedSquareSize : squareSize)
     
-    // 🎯 확인 다이얼로그 표시 (사용자 색상 모드 정보 포함)
+
     const colorModeText = useCustomColors 
       ? `🎨 Custom colors: ${colorCount} (${customColorCodes.slice(0, 3).join(', ')}${customColorCodes.length > 3 ? ' etc...' : ''})`
       : `🎨 Selected from all colors: ${colorCount}`
@@ -218,7 +218,7 @@ export default function ConvertPage() {
       return
     }
     
-    // 설정 확인 상태 체크
+
     const warnings = []
     if (!colorConfirmed) {
       warnings.push('Color settings are not confirmed')
@@ -235,7 +235,7 @@ export default function ConvertPage() {
     }
     
     try {
-      // 🎯 사용자 지정 색상 정보 포함하여 패턴 생성
+
       await generatePattern(imageData, {
         targetWidth,
         beadType,
@@ -243,7 +243,6 @@ export default function ConvertPage() {
         imageWidth,
         imageHeight,
         beadSize: currentBeadSize,
-        // NEW: 사용자 지정 색상 지원
         useCustomColors,
         customColorCodes: useCustomColors ? customColorCodes : undefined
       })
@@ -289,7 +288,7 @@ export default function ConvertPage() {
   }
 
 
-  // 🚀 NEW: Vector PDF download handler (INFINITE RESOLUTION!)
+
   const handleDownloadVectorPDF = async () => {
     if (!pattern || !calculatedSize) {
       alert('Pattern has not been generated yet.')
@@ -301,7 +300,7 @@ export default function ConvertPage() {
       
       console.log('🎯 Starting PURE VECTOR PDF generation (infinite resolution)...')
       
-      // 현재 설정된 비즈 사이즈 가져오기
+
       const currentBeadSize = beadType === 'circular' 
         ? (beadSettingsConfirmed ? confirmedCircularSize : circularSize)
         : (beadSettingsConfirmed ? confirmedSquareSize : squareSize)
@@ -311,7 +310,7 @@ export default function ConvertPage() {
         beadType,
         calculatedSize,
         imageName || 'pattern',
-        currentBeadSize // 실제 비즈 크기 전달
+        currentBeadSize 
       )
       
       const message = `✅ Pattern print completed!\n\n` + 
@@ -328,7 +327,7 @@ export default function ConvertPage() {
     }
   }
 
-  // 🆕 NEW: Pure SVG export handler (no margins, no info)
+
   const handleDownloadPureSVG = async () => {
     if (!pattern || !calculatedSize) {
       alert('Pattern has not been generated yet.')
@@ -340,7 +339,7 @@ export default function ConvertPage() {
       
       console.log('🎨 Starting PURE SVG generation (lightweight, no margins)...')
       
-      // 현재 설정된 비즈 사이즈 가져오기
+
       const currentBeadSize = beadType === 'circular' 
         ? (beadSettingsConfirmed ? confirmedCircularSize : circularSize)
         : (beadSettingsConfirmed ? confirmedSquareSize : squareSize)
@@ -374,10 +373,9 @@ export default function ConvertPage() {
     }
   }
 
-  // 제거된 기능: 실제 도안 확인 기능
-  // Google Fonts 로드
+
   useEffect(() => {
-    // Google Fonts CSS 링크 추가
+
     const link = document.createElement('link')
     link.href = 'https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap'
     link.rel = 'stylesheet'

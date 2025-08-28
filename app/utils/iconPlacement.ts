@@ -1,16 +1,16 @@
 // Icon Placement Algorithm for Cross Stitch Patterns
 // Prevents visual confusion by avoiding similar icons in adjacent positions
 
-// 🚀 GLOBAL CACHE: 동일한 색상 조합에 대한 아이콘 할당 재사용
+
 const ICON_ASSIGNMENT_CACHE = new Map<string, Map<string, Icon>>()
 
-// 캐시 키 생성: 색상 조합 + 그리드 크기
+
 function createCacheKey(colors: string[], gridWidth: number, gridHeight: number): string {
   const sortedColors = [...colors].sort().join(',')
   return `${sortedColors}|${gridWidth}x${gridHeight}`
 }
 
-// 캐시 관리 함수들
+
 export function clearIconAssignmentCache(): void {
   ICON_ASSIGNMENT_CACHE.clear()
   console.log('🗑️ Icon assignment cache cleared')

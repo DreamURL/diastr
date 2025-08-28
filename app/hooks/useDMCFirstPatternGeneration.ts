@@ -108,7 +108,6 @@ export function useDMCFirstPatternGeneration() {
         config,
         options.colorCount,
         options.analysisQuality || 'standard',
-        // 🎯 NEW: 사용자 지정 색상 지원
         options.useCustomColors ? options.customColorCodes : undefined
       )
       
@@ -202,7 +201,6 @@ export function useDMCFirstPatternGeneration() {
         maximum: suggestions.maximum
       }
     } catch (error) {
-      console.error('색상 제안 계산 실패:', error)
       return {
         optimal: 30,
         maximum: 100 // NEW: Higher fallback maximum

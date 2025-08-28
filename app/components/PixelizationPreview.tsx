@@ -60,7 +60,7 @@ export default function PixelizationPreview({
         textAlign: 'center',
         backgroundColor: 'rgba(0,0,0,0.05)'
       }}>
-        <p>이미지를 업로드하면 픽셀화 미리보기가 표시됩니다.</p>
+        <p>Upload an image to see the pixelized preview.</p>
       </div>
     )
   }
@@ -74,7 +74,7 @@ export default function PixelizationPreview({
         backgroundColor: 'rgba(0,0,0,0.05)'
       }}>
         <p style={{ color: 'red', fontWeight: 'bold', marginBottom: '1rem' }}>
-          오류가 발생했습니다
+          An error occurred
         </p>
         <p style={{ fontSize: '0.9rem' }}>{error}</p>
       </div>
@@ -85,7 +85,7 @@ export default function PixelizationPreview({
     return (
       <div className="processing-status">
         <div className="loading-spinner" />
-        <p>이미지를 픽셀화하는 중...</p>
+        <p>Pixelizing image...</p>
       </div>
     )
   }
@@ -93,7 +93,7 @@ export default function PixelizationPreview({
   return (
     <div>
       <h4 style={{ fontWeight: 'bold', marginBottom: '1rem' }}>
-        픽셀화된 이미지
+        Pixelized Image
       </h4>
       
       {displayImageUrl && (
@@ -119,28 +119,28 @@ export default function PixelizationPreview({
           fontSize: '0.9rem'
         }}>
           <h5 style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>
-            픽셀화 정보
+            Pixelization Info
           </h5>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
             <div>
-              <strong>완성 크기:</strong><br/>
+              <strong>Final Size:</strong><br/>
               {pixelizationInfo.targetSize}
             </div>
             <div>
-              <strong>비즈 격자:</strong><br/>
+              <strong>Bead Grid:</strong><br/>
               {pixelizationInfo.beadGrid}
             </div>
             <div>
-              <strong>총 비즈 개수:</strong><br/>
-              {pixelizationInfo.totalBeads.toLocaleString()}개
+              <strong>Total Beads:</strong><br/>
+              {pixelizationInfo.totalBeads.toLocaleString()}
             </div>
             <div>
-              <strong>비즈 종류:</strong><br/>
-              {pixelizationInfo.beadType === 'circular' ? '원형' : '사각형'} ({pixelizationInfo.beadSize})
+              <strong>Bead Type:</strong><br/>
+              {pixelizationInfo.beadType === 'circular' ? 'Circular' : 'Square'} ({pixelizationInfo.beadSize})
             </div>
           </div>
           <div style={{ marginTop: '0.5rem' }}>
-            <strong>해상도:</strong> {pixelizationInfo.beadsPerCm} 비즈/cm
+            <strong>Resolution:</strong> {pixelizationInfo.beadsPerCm} beads/cm
           </div>
         </div>
       )}
@@ -152,8 +152,7 @@ export default function PixelizationPreview({
         backgroundColor: 'rgba(0,0,0,0.02)',
         fontSize: '0.8rem'
       }}>
-        <strong>💡 팁:</strong> 픽셀화된 이미지는 실제 보석십자수 도안의 기본 구조를 보여줍니다. 
-        다음 단계에서 색상 매칭과 아이콘 배치가 적용됩니다.
+        <strong>💡 Tip:</strong> The pixelized image shows the basic structure of the diamond painting pattern. Color matching and icon placement are applied in the next step.
       </div>
     </div>
   )
