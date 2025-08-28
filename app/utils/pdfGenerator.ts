@@ -709,7 +709,7 @@ export async function generateVectorPDF(
       pdf.rect(x, y, actualBeadSizeMm, actualBeadSizeMm, 'F')
       
       // Draw white circle background for icon (50% transparency)
-      pdf.setGState(pdf.GState({ opacity: 0.1 }))
+      pdf.setGState(pdf.GState({ opacity: 0.7 }))
       pdf.setFillColor(255, 255, 255) // White
       const circleRadius = actualBeadSizeMm * 0.45 // Circle inscribed in square (90% of half side)
       pdf.circle(x + actualBeadSizeMm/2, y + actualBeadSizeMm/2, circleRadius, 'F')
@@ -720,7 +720,7 @@ export async function generateVectorPDF(
       // Draw icon as pure vector text with precise centering
       const icon = iconAssignments.get(pixel.selectedDMCColor.code)
       if (icon) {
-        const vectorData = createVectorIconForPDF(icon, actualBeadSizeMm * 0.7) // Reduced icon area for better fit
+        const vectorData = createVectorIconForPDF(icon, actualBeadSizeMm * 0.9) // Reduced icon area for better fit
         
         // Set text properties for vector rendering
         pdf.setTextColor(0, 0, 0) // Black text
@@ -734,14 +734,14 @@ export async function generateVectorPDF(
         // Special handling for two-digit numbers
         if (vectorData.isDoubleDigit) {
           // Additional scaling for two-digit numbers to ensure perfect fit
-          pdf.setFontSize(vectorData.fontSize * 0.85) // Further reduce for two digits
+          pdf.setFontSize(vectorData.fontSize * 1.4) // Further reduce for two digits
           
           // Draw text with tighter spacing for two digits
           pdf.text(vectorData.symbol, textX, textY, { 
             align: 'center',
             baseline: 'middle',
-            maxWidth: actualBeadSizeMm * 0.85, // Tighter bounds for two digits
-            charSpace: -0.2 // Reduce character spacing for better fit
+            maxWidth: actualBeadSizeMm * 1, // Tighter bounds for two digits
+            charSpace: 0 // Reduce character spacing for better fit
           })
         } else {
           // Single character icons
