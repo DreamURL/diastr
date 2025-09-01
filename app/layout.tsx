@@ -1,6 +1,8 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import PillNav from './components/PillNav'
+import GoogleAnalytics from './components/GoogleAnalytics'
+
 
 export const metadata: Metadata = {
   title: {
@@ -95,9 +97,14 @@ export default function RootLayout({
         <link rel="icon" href="/diastr/favicon.ico" type="image/x-icon" />
         <link rel="shortcut icon" href="/diastr/favicon.ico" type="image/x-icon" />
         <link rel="apple-touch-icon" href="/diastr/icons/icon-192x192.png" />
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9786013383976168"crossOrigin="anonymous"></script>
+        <script 
+          async 
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9786013383976168" 
+          crossOrigin="anonymous"
+        ></script>
       </head>
       <body style={{ fontFamily: 'Baskervville, serif', fontWeight: '500' }}>
+        <GoogleAnalytics />
         <div style={{ 
           display: 'flex', 
           justifyContent: 'center', 
