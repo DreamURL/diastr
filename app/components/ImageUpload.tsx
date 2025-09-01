@@ -4,9 +4,10 @@ import { useState, useRef } from 'react'
 
 interface ImageUploadProps {
   onImageUpload: (file: File) => void
+  compact?: boolean
 }
 
-export default function ImageUpload({ onImageUpload }: ImageUploadProps) {
+export default function ImageUpload({ onImageUpload, compact = false }: ImageUploadProps) {
   const [isDragging, setIsDragging] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
@@ -96,32 +97,36 @@ export default function ImageUpload({ onImageUpload }: ImageUploadProps) {
                 src={previewUrl} 
                 alt="Preview" 
                 style={{ 
-                  maxWidth: '300px', 
-                  maxHeight: '200px', 
-                  marginBottom: '1rem',
-                  borderRadius: '12px',
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)' 
+                  maxWidth: compact ? '150px' : '300px', 
+                  maxHeight: compact ? '100px' : '200px', 
+                  marginBottom: compact ? '0.5rem' : '1rem',
+                  borderRadius: compact ? '6px' : '12px',
+                  boxShadow: compact ? '0 2px 6px rgba(0, 0, 0, 0.1)' : '0 4px 12px rgba(0, 0, 0, 0.15)' 
                 }} 
               />
             </div>
             <div className="success-icon">✓</div>
-            <p style={{ fontFamily: 'Baskervville, serif', fontWeight: '500' }}>
-              Image uploaded successfully. Moving to conversion page.
+            <p style={{ 
+              fontFamily: 'Baskervville, serif', 
+              fontWeight: '500',
+              fontSize: compact ? '0.8rem' : '1rem'
+            }}>
+              {compact ? 'Image uploaded' : 'Image uploaded successfully. Moving to conversion page.'}
             </p>
           </div>
         ) : (
           <div className="upload-content">
             <div className="upload-icon">
               <svg 
-                width="60" 
-                height="60" 
+                width={compact ? "40" : "60"} 
+                height={compact ? "40" : "60"} 
                 viewBox="0 0 24 24" 
                 fill="none" 
                 stroke="currentColor" 
                 strokeWidth="1.5" 
                 strokeLinecap="round" 
                 strokeLinejoin="round"
-                style={{ marginBottom: '1.5rem', opacity: 0.7 }}
+                style={{ marginBottom: compact ? '0.8rem' : '1.5rem', opacity: 0.7 }}
               >
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                 <polyline points="17,8 12,3 7,8"/>
@@ -129,26 +134,29 @@ export default function ImageUpload({ onImageUpload }: ImageUploadProps) {
               </svg>
             </div>
             <p style={{ 
-              fontSize: '1.3rem', 
-              marginBottom: '1.2rem', 
+              fontSize: compact ? '0.9rem' : '1.3rem', 
+              marginBottom: compact ? '0.6rem' : '1.2rem', 
               fontFamily: 'Baskervville, serif',
-              fontWeight: '500'
+              fontWeight: '500',
+              textAlign: 'center' as const
             }}>
-              Drag and drop an image 
-              <br/>
-              or click to upload 
+              {compact ? 'Upload Image' : 'Drag and drop an image'} 
+              {!compact && <br/>}
+              {!compact && 'or click to upload'}
             </p>
-            <p style={{ 
-              fontSize: '0.95rem', 
-              color: '#666', 
-              opacity: '0.8',
-              fontFamily: 'Baskervville, serif',
-              fontWeight: '500'
-            }}>
-              Supported formats: 
-              <br/>
-              JPG, PNG, WebP (Max 50MB)
-            </p>
+            {!compact && (
+              <p style={{ 
+                fontSize: '0.95rem', 
+                color: '#666', 
+                opacity: '0.8',
+                fontFamily: 'Baskervville, serif',
+                fontWeight: '500'
+              }}>
+                Supported formats: 
+                <br/>
+                JPG, PNG, WebP (Max 50MB)
+              </p>
+            )}
           </div>
         )}
       </div>

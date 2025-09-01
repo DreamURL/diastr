@@ -1,12 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { getStoredImageUnlimited } from '../utils/imageStorageUnlimited'
+import { getStoredImageUnlimited, storeImageUnlimited } from '../utils/imageStorageUnlimited'
 import SizeConfiguration from '../components/SizeConfiguration'
 import BeadConfiguration from '../components/BeadConfiguration'
 import ColorConfiguration from '../components/ColorConfiguration'
 import PreviewPanel from '../components/PreviewPanel'
 import DMCColorTable from '../components/DMCColorTable'
+import ImageUpload from '../components/ImageUpload'
 import { useDMCFirstPatternGeneration } from '../hooks/useDMCFirstPatternGeneration'
 import { generateRealSizePDF, generateVectorPDF } from '../utils/pdfGenerator'
 import { generatePureSVGPattern, downloadSVGFile } from '../utils/svgGenerator'
@@ -110,6 +111,37 @@ export default function ConvertPage() {
     loadStoredImage()
   }, [])
 
+  // Handle image upload in convert page
+  const handleImageUpload = async (file: File) => {
+    try {
+      const result = await storeImageUnlimited(file, 'uploadedImage')
+      if (result.success) {
+        // Load the uploaded image immediately
+        const storedData = await getStoredImageUnlimited('uploadedImage')
+        if (storedData) {
+          setImageData(storedData.dataUrl)
+          setImageName(storedData.fileName)
+          
+          // Get image dimensions
+          const img = new Image()
+          img.onload = () => {
+            setImageWidth(img.width)
+            setImageHeight(img.height)
+          }
+          img.onerror = () => {
+            console.error('Failed to load uploaded image')
+            alert('Failed to load uploaded image. Please try again.')
+          }
+          img.src = storedData.dataUrl
+        }
+      } else {
+        throw new Error('Failed to save image.')
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to save image.'
+      alert(`Image upload failed: ${errorMessage}\n\nThis may be due to browser limitations.\nPlease refresh the page and try again.`) 
+    }
+  }
 
   const handleConfirmColorSettings = async (currentColorCount: number, customColors?: string[]) => {
     if (!imageData || !imageWidth || !imageHeight || !targetWidth || !beadType) {
@@ -382,19 +414,6 @@ export default function ConvertPage() {
     document.head.appendChild(link)
   }, [])
 
-  if (!imageData) {
-    return (
-      <div className="text-center">
-        <h1 style={{ marginTop: '5rem', fontSize: '2rem', marginBottom: '2rem', fontFamily: 'Baskervville, serif', fontWeight: 700 }}>Image Conversion</h1>
-        <p style={{ fontFamily: 'Baskervville, serif', fontWeight: 500, fontSize: '1.1rem', marginBottom: '2rem' }}>
-          No uploaded image found.
-        </p>
-        <a href="/" style={{ fontFamily: 'Baskervville, serif', fontWeight: 500, color: 'black', textDecoration: 'underline' }}>
-          Please return to homepage and upload an image
-        </a>
-      </div>
-    )
-  }
 
   return (
     <>
@@ -409,25 +428,38 @@ export default function ConvertPage() {
       <div className="convert-main-container w-screen h-screen">
         <div className="parent convert-grid-layout">
           
-          {/* Div1: Original Image Display */}
+          {/* Div1: Original Image Display or Upload */}
           <div className="div1 convert-image-display">
-            <h2 style={{ fontSize: '1.1rem', fontFamily: 'Baskervville, serif', fontWeight: 700, marginBottom: '0.8rem' }}>
-              Uploaded Image
-            </h2>
-            <img 
-              src={imageData} 
-              alt={imageName}
-              className="convert-uploaded-image"
-              style={{ 
-                width: '100%',
-                height: 'auto',
-                maxHeight: '80%',
-                objectFit: 'contain'
-              }}
-            />
-            <p style={{ fontFamily: 'Baskervville, serif', fontWeight: 500, fontSize: '0.85rem', marginTop: '0.5rem' }}>
-              {imageWidth} × {imageHeight}px
-            </p>
+            {imageData ? (
+              <>
+                <h2 style={{ fontSize: '1.1rem', fontFamily: 'Baskervville, serif', fontWeight: 700, marginBottom: '0.8rem' }}>
+                  Uploaded Image
+                </h2>
+                <img 
+                  src={imageData} 
+                  alt={imageName}
+                  className="convert-uploaded-image"
+                  style={{ 
+                    width: '100%',
+                    height: 'auto',
+                    maxHeight: '80%',
+                    objectFit: 'contain'
+                  }}
+                />
+                <p style={{ fontFamily: 'Baskervville, serif', fontWeight: 500, fontSize: '0.85rem', marginTop: '0.5rem' }}>
+                  {imageWidth} × {imageHeight}px
+                </p>
+              </>
+            ) : (
+              <>
+                <h2 style={{ fontSize: '1.1rem', fontFamily: 'Baskervville, serif', fontWeight: 700, marginBottom: '0.8rem' }}>
+                  Upload Image
+                </h2>
+                <div style={{ height: 'calc(100% - 2rem)' }}>
+                  <ImageUpload onImageUpload={handleImageUpload} compact={true} />
+                </div>
+              </>
+            )}
           </div>
 
           {/* Div2: Size & Bead Configuration */}
@@ -538,7 +570,7 @@ export default function ConvertPage() {
               <br/>
             </h2>
             
-            {pattern ? (
+            {pattern && imageData ? (
               <div style={{ height: 'calc(100% - 3.5rem)' }}>
                 <PreviewPanel
                   imageData={imageData}
