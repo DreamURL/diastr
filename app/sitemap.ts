@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://dreamurl.github.io/diastr'
+  const baseUrl = 'https://diastr.dreamurl.biz'
   
   return [
     {

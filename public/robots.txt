@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://dreamurl.github.io/diastr/sitemap.xml
+Sitemap: https://diastr.dreamurl.biz/sitemap.xml
 
 # Crawl-delay
 Crawl-delay: 1

@@ -30,14 +30,14 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://dreamurl.github.io/diastr'), 
+  metadataBase: new URL('https://diastr.dreamurl.biz'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://dreamurl.github.io/diastr', 
+    url: 'https://diastr.dreamurl.biz',
     title: 'Diamond painting Pattern Converter - Transform Images into Beautiful Patterns',
     description: 'Upload an image to convert it into a beautiful Diamond painting pattern. DMC color matching, real-time preview, PDF download - all features available for free.',
     siteName: 'Diamond painting Pattern Converter',
@@ -73,15 +73,15 @@ export const metadata: Metadata = {
   },
   category: 'crafts',
   classification: 'Diamond painting Tools',
-  manifest: '/diastr/manifest.json',
+  manifest: '/manifest.json',
   icons: {
     icon: [
-      { url: '/diastr/favicon.ico', sizes: 'any' },
-      { url: '/diastr/icons/icon-192x192.png', type: 'image/png', sizes: '192x192' },
-      { url: '/diastr/icons/icon-512x512.png', type: 'image/png', sizes: '512x512' },
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/icons/icon-192x192.png', type: 'image/png', sizes: '192x192' },
+      { url: '/icons/icon-512x512.png', type: 'image/png', sizes: '512x512' },
     ],
     apple: [
-      { url: '/diastr/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
     ],
   },
 }
@@ -94,9 +94,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/diastr/favicon.ico" type="image/x-icon" />
-        <link rel="shortcut icon" href="/diastr/favicon.ico" type="image/x-icon" />
-        <link rel="apple-touch-icon" href="/diastr/icons/icon-192x192.png" />
+        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
         <script 
           async 
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9786013383976168" 
