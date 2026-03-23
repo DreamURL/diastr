@@ -31,7 +31,7 @@
 /* convert css */
 .convert-main-container {
   width: 100vw;
-  height: 100vh;
+  height: calc(100vh - 60px);
   padding: 8px;
   box-sizing: border-box;
   overflow: hidden;

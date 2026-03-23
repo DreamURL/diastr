@@ -428,7 +428,7 @@ export default function ConvertPage() {
       `}</style>
       
       {/* Main Convert Container - Full Screen Layout */}
-      <div className="convert-main-container w-screen h-screen">
+      <div className="convert-main-container w-screen">
         <div className="parent convert-grid-layout">
           
           {/* Div1: Original Image Display or Upload */}
