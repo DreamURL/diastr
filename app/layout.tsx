@@ -103,12 +103,13 @@ export default function RootLayout({
           crossOrigin="anonymous"
         ></script>
       </head>
-      <body style={{ fontFamily: 'Baskervville, serif', fontWeight: '500' }}>
+      <body style={{ fontFamily: 'Baskervville, serif', fontWeight: '500', height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <GoogleAnalytics />
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          width: '100%'
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          width: '100%',
+          flexShrink: 0
         }}>
           <PillNav
             items={[
@@ -125,7 +126,7 @@ export default function RootLayout({
             pillTextColor="#000000"
           />
         </div>
-        <main className="main-overlay">
+        <main className="main-overlay" style={{ flex: 1, overflow: 'auto' }}>
           {children}
         </main>
       </body>
