@@ -9,6 +9,7 @@ import PreviewPanel from '../components/PreviewPanel'
 import DMCColorTable from '../components/DMCColorTable'
 import ImageUpload from '../components/ImageUpload'
 import { useDMCFirstPatternGeneration } from '../hooks/useDMCFirstPatternGeneration'
+import AdUnit from '../components/AdUnit'
 import { generateRealSizePDF, generateVectorPDF } from '../utils/pdfGenerator'
 import { generatePureSVGPattern, downloadSVGFile } from '../utils/svgGenerator'
 
@@ -67,9 +68,13 @@ export default function ConvertPage() {
   
   // PDF generation state
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false)
-  
+
   // SVG generation state
   const [isGeneratingSVG, setIsGeneratingSVG] = useState(false)
+
+  // Interstitial ad state
+  const [showInterstitialAd, setShowInterstitialAd] = useState(false)
+  const [canCloseAd, setCanCloseAd] = useState(false)
 
   
   useEffect(() => {
@@ -301,11 +306,9 @@ export default function ConvertPage() {
         imageName
       )
       
-      // Success message
-      const message = `✅ DMC TABLE PDF generation completed!\n\n`
-      
-      alert(message)
-      
+      alert('DMC TABLE PDF generation completed!')
+      showAdAfterDownload()
+
     } catch (error) {
       console.error('DMC TABLE PDF 생성 실패:', error)
       
@@ -345,11 +348,8 @@ export default function ConvertPage() {
         currentBeadSize 
       )
       
-      const message = `✅ Pattern print completed!\n\n` + 
-      'Please open the downloaded PDF in Chrome.\n\n' + 
-      'Adobe Acrobat Reader may be slow.'
-      
-      alert(message)
+      alert('Pattern print completed!\nPlease open the downloaded PDF in Chrome.')
+      showAdAfterDownload()
       
     } catch (error) {
       console.error('Vector PDF generation failed:', error)
@@ -391,11 +391,8 @@ export default function ConvertPage() {
       // Download SVG file
       downloadSVGFile(svgContent, fileName)
       
-      const message = `✅ SVG export completed!\n\n` + 
-      'Downloaded as lightweight SVG file.\n' + 
-      'Can be opened in web browsers or vector editing programs.'
-      
-      alert(message)
+      alert('SVG export completed!')
+      showAdAfterDownload()
       
     } catch (error) {
       console.error('Pure SVG generation failed:', error)
@@ -405,6 +402,12 @@ export default function ConvertPage() {
     }
   }
 
+
+  const showAdAfterDownload = () => {
+    setShowInterstitialAd(true)
+    setCanCloseAd(false)
+    setTimeout(() => setCanCloseAd(true), 5000)
+  }
 
   useEffect(() => {
 
@@ -718,20 +721,9 @@ export default function ConvertPage() {
             )}
           </div>
 
-          {/* Div8: Additional Area */}
-          <div className="div8">
-            <div style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center', 
-              height: '100%',
-              color: 'black',
-              fontFamily: 'Baskervville, serif',
-              fontWeight: 500,
-              fontSize: '0.9rem'
-            }}>
-              Additional Area (div8)
-            </div>
+          {/* Div8: Ad Area */}
+          <div className="div8" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+            <AdUnit slot="8504504766" format="auto" style={{ display: 'block', width: '100%', height: '100%' }} />
           </div>
 
         </div>
@@ -809,6 +801,73 @@ export default function ConvertPage() {
                 )}
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Interstitial Ad Overlay */}
+      {showInterstitialAd && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.85)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 10000
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            padding: '2rem',
+            borderRadius: '8px',
+            maxWidth: '600px',
+            width: '90%',
+            textAlign: 'center',
+            position: 'relative'
+          }}>
+            {canCloseAd ? (
+              <button
+                onClick={() => setShowInterstitialAd(false)}
+                style={{
+                  position: 'absolute',
+                  top: '0.5rem',
+                  right: '0.75rem',
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '1.5rem',
+                  cursor: 'pointer',
+                  color: '#333',
+                  fontFamily: 'Baskervville, serif'
+                }}
+              >
+                X
+              </button>
+            ) : (
+              <div style={{
+                position: 'absolute',
+                top: '0.75rem',
+                right: '0.75rem',
+                fontSize: '0.8rem',
+                color: '#999',
+                fontFamily: 'Baskervville, serif'
+              }}>
+                Close available in a moment...
+              </div>
+            )}
+            <p style={{
+              fontFamily: 'Baskervville, serif',
+              fontWeight: 700,
+              fontSize: '1rem',
+              marginBottom: '1rem',
+              color: '#333'
+            }}>
+              Thank you for using Diastr!
+            </p>
+            <AdUnit slot="8504504766" format="auto" style={{ display: 'block', minHeight: '250px' }} />
           </div>
         </div>
       )}
