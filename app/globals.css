@@ -114,13 +114,14 @@
   grid-column: span 2 / span 2;
   grid-column-start: 3;
   grid-row-start: 6;
-  padding: 8px;
+  padding: 0;
   border: 1px solid #343131;
   background-color: #ffffff;
-  overflow: auto;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  min-height: 90px;
 }
 
 .div6 {

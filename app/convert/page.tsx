@@ -722,8 +722,8 @@ export default function ConvertPage() {
           </div>
 
           {/* Div8: Ad Area */}
-          <div className="div8" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-            <AdUnit slot="8504504766" format="auto" style={{ display: 'block', width: '100%', height: '100%' }} />
+          <div className="div8">
+            <AdUnit slot="8504504766" format="auto" style={{ display: 'block', width: '100%' }} />
           </div>
 
         </div>
