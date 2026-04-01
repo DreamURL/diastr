@@ -102,10 +102,8 @@
 }
 
 .div5 {
-  grid-column: span 2 / span 2;
-  grid-row: span 5 / span 5;
-  grid-column-start: 3;
-  grid-row-start: 1;
+  grid-column: 3 / span 2;
+  grid-row: 1 / span 6;
   padding: 8px;
   border: 3px solid #343131;
   background-color: #ffffff;

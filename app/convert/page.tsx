@@ -721,11 +721,6 @@ export default function ConvertPage() {
             )}
           </div>
 
-          {/* Div8: Ad Area */}
-          <div className="div8">
-            <AdUnit slot="8504504766" format="horizontal" style={{ display: 'inline-block', width: '100%', height: '90px' }} />
-          </div>
-
         </div>
       </div>
 
