@@ -20,13 +20,27 @@ export default function AdUnit({ slot, format = 'auto', layout, style, className
   const adRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    try {
-      if (adRef.current && adRef.current.querySelector('.adsbygoogle')?.childElementCount === 0) {
-        (window.adsbygoogle = window.adsbygoogle || []).push({})
+    const loadAd = () => {
+      try {
+        if (adRef.current && adRef.current.querySelector('.adsbygoogle')?.childElementCount === 0) {
+          (window.adsbygoogle = window.adsbygoogle || []).push({})
+        }
+      } catch (e) {
+        // AdSense not loaded
       }
-    } catch (e) {
-      // AdSense not loaded
     }
+
+    if (document.querySelector('script[src*="adsbygoogle.js"]')) {
+      loadAd()
+      return
+    }
+
+    const script = document.createElement('script')
+    script.async = true
+    script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2030441326964978'
+    script.crossOrigin = 'anonymous'
+    script.onload = loadAd
+    document.head.appendChild(script)
   }, [])
 
   return (

@@ -97,11 +97,6 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" type="image/x-icon" />
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2030441326964978"
-          crossOrigin="anonymous"
-        ></script>
       </head>
       <body style={{ fontFamily: 'Baskervville, serif', fontWeight: '500' }}>
         <GoogleAnalytics />
@@ -115,7 +110,8 @@ export default function RootLayout({
               { label: 'Home', href: '/' },
               { label: 'Convert', href: '/convert' },
               { label: 'How to Use', href: '/use' },
-              { label: 'Upscaling', href: '/gallery' }
+              { label: 'Upscaling', href: '/gallery' },
+              { label: 'DMC Table', href: '/dmc-table' }
             ]}
             className="custom-nav"
             ease="power2.easeOut"
