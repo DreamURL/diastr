@@ -2,8 +2,10 @@
     position: absolute;
     top: 1em;
     z-index: 99;
+    /* 컨테이너/네비 바 자체는 터치를 가로채지 않고, 실제 조작 요소만 받는다 */
+    pointer-events: none;
   }
-  
+
   @media (max-width: 768px) {
     .pill-nav-container {
       width: 100%;
@@ -20,6 +22,13 @@
     display: flex;
     align-items: center;
     box-sizing: border-box;
+    pointer-events: none;
+  }
+
+  .pill-nav-items,
+  .mobile-menu-button,
+  .mobile-menu-popover {
+    pointer-events: auto;
   }
   
   @media (max-width: 768px) {
@@ -178,6 +187,7 @@
     cursor: pointer;
     padding: 0;
     position: relative;
+    touch-action: manipulation;
   }
   
   @media (max-width: 768px) {

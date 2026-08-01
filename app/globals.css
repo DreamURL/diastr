@@ -169,12 +169,17 @@
 }
 
 @media (max-width: 768px) {
+  /* 모바일에서는 고정 뷰포트 레이아웃을 해제해 페이지 전체가 스크롤되도록 한다.
+     position/overflow 를 함께 되돌리지 않으면 콘텐츠가 잘리고 스크롤이 막힌다. */
   .convert-main-container {
+    position: static;
     height: auto;
     min-height: 100vh;
+    overflow: visible;
     padding: 4px;
+    padding-top: 60px; /* 상단 오버레이 네비게이션에 가려지지 않도록 */
   }
-  
+
   .parent {
     display: flex;
     flex-direction: column;

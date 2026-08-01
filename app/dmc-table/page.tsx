@@ -21,12 +21,12 @@ export const metadata: Metadata = {
     'embroidery DMC reference',
   ],
   alternates: {
-    canonical: 'https://diastr.dreamurl.biz/dmc-table',
+    canonical: 'https://diastr.dreamurl.biz/dmc-table/',
   },
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://diastr.dreamurl.biz/dmc-table',
+    url: 'https://diastr.dreamurl.biz/dmc-table/',
     title: 'Full DMC Color Chart — All DMC Thread Colors with RGB & HEX',
     description:
       'Complete DMC color chart with every DMC thread code, color name, RGB value, and HEX code.',
@@ -62,7 +62,7 @@ const SCHEMA = {
   '@type': 'Dataset',
   name: 'Full DMC Color Chart',
   description: `Complete database of ${DMC_COLORS.length} DMC thread colors with RGB and HEX values, used for diamond painting, cross stitch, and embroidery.`,
-  url: 'https://diastr.dreamurl.biz/dmc-table',
+  url: 'https://diastr.dreamurl.biz/dmc-table/',
   inLanguage: 'en',
   keywords: 'DMC color chart, DMC thread colors, DMC RGB, DMC HEX, diamond painting',
   variableMeasured: ['DMC Code', 'Color Name', 'RGB', 'HEX'],

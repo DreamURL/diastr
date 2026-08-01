@@ -3,6 +3,10 @@ import type { Metadata } from 'next'
 import PillNav from './components/PillNav'
 import GoogleAnalytics from './components/GoogleAnalytics'
 
+// OG/트위터 썸네일 URL. 빌드마다 값이 바뀌면(Date.now() 등) 소셜 플랫폼의
+// 이미지 캐시가 매번 무효화되므로 고정 값을 쓴다.
+// 썸네일 이미지를 실제로 교체했을 때만 아래 숫자를 수동으로 올릴 것.
+const OG_IMAGE_URL = '/images/Thumbnail.jpeg?v=1'
 
 export const metadata: Metadata = {
   title: {
@@ -31,19 +35,19 @@ export const metadata: Metadata = {
     telephone: false,
   },
   metadataBase: new URL('https://diastr.dreamurl.biz'),
-  alternates: {
-    canonical: '/',
-  },
+  // canonical 은 여기(루트 레이아웃)에 두지 않는다.
+  // metadata 를 선언하지 않은 하위 페이지가 이 값을 그대로 상속받아
+  // 모든 페이지가 홈으로 canonical 되는 문제가 생긴다. 각 페이지에서 개별 선언할 것.
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://diastr.dreamurl.biz',
+    url: 'https://diastr.dreamurl.biz/',
     title: 'Diamond painting Pattern Converter - Transform Images into Beautiful Patterns',
     description: 'Upload an image to convert it into a beautiful Diamond painting pattern. DMC color matching, real-time preview, PDF download - all features available for free.',
     siteName: 'Diamond painting Pattern Converter',
     images: [
       {
-        url: `/images/Thumbnail.jpeg?v=${Date.now()}`,
+        url: OG_IMAGE_URL,
         width: 1200,
         height: 630,
         alt: 'Diamond painting Pattern Converter thumbnail image',
@@ -55,7 +59,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Diamond painting Pattern Converter - Transform Images into Beautiful Patterns',
     description: 'Upload an image to convert it into a beautiful Diamond painting pattern. DMC color matching, real-time preview, PDF download - all features available for free.',
-    images: [`/images/Thumbnail.jpeg?v=${Date.now()}`],
+    images: [OG_IMAGE_URL],
   },
   robots: {
     index: true,

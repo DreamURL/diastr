@@ -1,4 +1,14 @@
+import type { Metadata } from 'next'
 import Image from 'next/image'
+
+export const metadata: Metadata = {
+  title: 'How to Use — Diamond Painting Pattern Converter',
+  description:
+    'Step-by-step guide to converting a photo into a diamond painting pattern: upload an image, set canvas size and bead type, choose the color count, preview, and download the PDF pattern.',
+  alternates: {
+    canonical: 'https://diastr.dreamurl.biz/use/',
+  },
+}
 
 export default function UsePage() {
   return (
